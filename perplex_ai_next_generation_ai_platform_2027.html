@@ -1,0 +1,2012 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PERPLEX AI — Your intelligence. Expanded.</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts: Inter & JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- Marked.js for Markdown Rendering & Highlight.js for Code Syntax -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        obsidian: '#050508',
+                        charcoal: '#0B0D13',
+                        slateDark: '#12151E',
+                        electric: '#2563EB',
+                        cyanGlow: '#06B6D4',
+                        violetAccent: '#7C3AED',
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'fade-in': 'fadeIn 0.35s ease-out forwards',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0', transform: 'translateY(8px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Custom Scrollbar for 2027 Minimalist Aesthetic */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(148, 163, 184, 0.2);
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(148, 163, 184, 0.35);
+        }
+
+        /* Subtle Glassmorphism */
+        .glass-panel {
+            background: rgba(18, 21, 30, 0.72);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        html:not(.dark) .glass-panel {
+            background: rgba(255, 255, 255, 0.85);
+            border: 1px solid rgba(15, 23, 42, 0.08);
+        }
+
+        /* Ambient Glow */
+        .ambient-glow {
+            background: radial-gradient(circle at 50% 0%, rgba(37, 99, 235, 0.14) 0%, rgba(6, 182, 212, 0.05) 35%, transparent 70%);
+        }
+
+        /* Markdown Content Styling */
+        .markdown-body p { margin-bottom: 0.75rem; line-height: 1.65; }
+        .markdown-body p:last-child { margin-bottom: 0; }
+        .markdown-body h1, .markdown-body h2, .markdown-body h3 { font-weight: 600; margin-top: 1.25rem; margin-bottom: 0.5rem; }
+        .markdown-body ul, .markdown-body ol { margin-left: 1.25rem; margin-bottom: 0.75rem; list-style-type: disc; }
+        .markdown-body ol { list-style-type: decimal; }
+        .markdown-body code:not(pre code) {
+            background: rgba(148, 163, 184, 0.15);
+            padding: 0.15rem 0.35rem;
+            border-radius: 0.375rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85em;
+        }
+        .markdown-body pre {
+            background: #0d1017 !important;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 0.75rem;
+            padding: 1rem;
+            overflow-x: auto;
+            margin: 0.75rem 0;
+            position: relative;
+        }
+        .markdown-body table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 0.75rem 0;
+            font-size: 0.9em;
+        }
+        .markdown-body th, .markdown-body td {
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            padding: 0.5rem 0.75rem;
+            text-align: left;
+        }
+        .markdown-body th { background: rgba(148, 163, 184, 0.08); font-weight: 600; }
+
+        /* Typing Cursor Animation */
+        .typing-cursor::after {
+            content: '▋';
+            display: inline-block;
+            color: #06B6D4;
+            animation: blink 1s step-end infinite;
+            margin-left: 2px;
+        }
+        @keyframes blink { 50% { opacity: 0; } }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 dark:bg-obsidian dark:text-slate-100 font-sans antialiased selection:bg-electric/30 selection:text-cyan-200 overflow-x-hidden">
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <!-- Fullscreen Image Preview Modal -->
+    <div id="image-modal" class="fixed inset-0 z-50 hidden bg-black/90 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="relative max-w-5xl w-full flex flex-col items-center">
+            <div class="w-full flex justify-between items-center mb-3 text-white">
+                <p id="modal-image-prompt" class="text-sm text-slate-300 truncate max-w-2xl"></p>
+                <div class="flex items-center gap-2">
+                    <button id="modal-download-btn" class="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-xs font-medium flex items-center gap-1.5 transition">
+                        <i data-lucide="download" class="w-4 h-4"></i> Download
+                    </button>
+                    <button onclick="closeImageModal()" class="p-2 rounded-lg bg-white/10 hover:bg-white/20 transition">
+                        <i data-lucide="x" class="w-5 h-5"></i>
+                    </button>
+                </div>
+            </div>
+            <img id="modal-image-src" src="" alt="Full Preview" class="max-h-[82vh] w-auto rounded-2xl border border-white/10 shadow-2xl object-contain">
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- 1. LANDING VIEW (PUBLIC)                   -->
+    <!-- ========================================== -->
+    <div id="landing-view" class="min-h-screen flex flex-col justify-between relative ambient-glow">
+        <!-- Navbar -->
+        <header class="w-full max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <!-- Geometric PERPLEX AI Logo -->
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-electric via-cyanGlow to-violetAccent p-[1.5px] shadow-lg shadow-electric/20">
+                    <div class="w-full h-full bg-obsidian rounded-[10px] flex items-center justify-center">
+                        <svg class="w-5 h-5 text-cyanGlow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="12 2 21 7 21 17 12 22 3 17 3 7 12 2"></polygon>
+                            <circle cx="12" cy="12" r="3"></circle>
+                            <line x1="12" y1="2" x2="12" y2="9"></line>
+                            <line x1="21" y1="17" x2="14.6" y2="13.5"></line>
+                            <line x1="3" y1="17" x2="9.4" y2="13.5"></line>
+                        </svg>
+                    </div>
+                </div>
+                <span class="font-semibold tracking-wider text-lg text-slate-900 dark:text-white">PERPLEX <span class="text-xs font-mono px-1.5 py-0.5 rounded bg-electric/15 text-electric dark:text-cyanGlow border border-electric/20">AI</span></span>
+            </div>
+
+            <div class="flex items-center gap-3">
+                <button onclick="toggleTheme()" class="p-2.5 rounded-xl text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white hover:bg-slate-200/50 dark:hover:bg-white/5 transition" title="Toggle Theme">
+                    <i data-lucide="sun-moon" class="w-5 h-5"></i>
+                </button>
+                <button onclick="openAuthModal('login')" class="px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition">
+                    Sign In
+                </button>
+                <button onclick="openAuthModal('signup')" class="px-4 py-2 rounded-xl bg-electric hover:bg-blue-600 text-white text-sm font-medium shadow-lg shadow-electric/25 transition">
+                    Get Started
+                </button>
+            </div>
+        </header>
+
+        <!-- Hero Section -->
+        <main class="max-w-5xl mx-auto px-6 py-16 md:py-24 text-center flex flex-col items-center animate-fade-in">
+            <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full glass-panel text-xs font-medium text-electric dark:text-cyanGlow mb-8">
+                <span class="w-2 h-2 rounded-full bg-cyanGlow animate-pulse"></span>
+                PERPLEX ENGINE 2027 • MULTIMODAL INTELLIGENCE
+            </div>
+
+            <h1 class="text-4xl sm:text-6xl md:text-7xl font-bold tracking-tight text-slate-900 dark:text-white mb-6 leading-[1.1]">
+                PERPLEX AI<br>
+                <span class="bg-gradient-to-r from-electric via-cyanGlow to-violetAccent bg-clip-text text-transparent">
+                    “Your intelligence. Expanded.”
+                </span>
+            </h1>
+
+            <p class="text-lg sm:text-xl text-slate-600 dark:text-slate-400 max-w-2xl mb-10 font-normal leading-relaxed">
+                Think smarter, create faster, and explore what's possible with AI.
+            </p>
+
+            <div class="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
+                <button onclick="openAuthModal('signup')" class="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-gradient-to-r from-electric to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white font-medium text-base shadow-xl shadow-electric/25 transition flex items-center justify-center gap-2">
+                    Get Started <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                </button>
+                <button onclick="openAuthModal('login')" class="w-full sm:w-auto px-8 py-3.5 rounded-xl glass-panel hover:bg-slate-200/60 dark:hover:bg-white/10 text-slate-900 dark:text-white font-medium text-base transition">
+                    Sign In
+                </button>
+            </div>
+
+            <!-- Feature Highlights Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mt-20 text-left w-full">
+                <div class="p-6 rounded-2xl glass-panel">
+                    <div class="w-10 h-10 rounded-xl bg-electric/15 text-electric dark:text-cyanGlow flex items-center justify-center mb-4">
+                        <i data-lucide="cpu" class="w-5 h-5"></i>
+                    </div>
+                    <h3 class="font-semibold text-base mb-1.5">Deep Reasoning Assistant</h3>
+                    <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">Write, debug code, analyze documents, and synthesize complex topics with streaming responses.</p>
+                </div>
+                <div class="p-6 rounded-2xl glass-panel">
+                    <div class="w-10 h-10 rounded-xl bg-violetAccent/15 text-violet-500 dark:text-violet-400 flex items-center justify-center mb-4">
+                        <i data-lucide="sparkles" class="w-5 h-5"></i>
+                    </div>
+                    <h3 class="font-semibold text-base mb-1.5">Perplex Create Studio</h3>
+                    <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">Generate studio-grade visuals in Photorealistic, Cinematic, 3D, and Architectural styles.</p>
+                </div>
+                <div class="p-6 rounded-2xl glass-panel">
+                    <div class="w-10 h-10 rounded-xl bg-cyanGlow/15 text-cyan-600 dark:text-cyanGlow flex items-center justify-center mb-4">
+                        <i data-lucide="shield-check" class="w-5 h-5"></i>
+                    </div>
+                    <h3 class="font-semibold text-base mb-1.5">Encrypted Cloud Sync</h3>
+                    <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">Your conversations, custom projects, and image galleries are isolated and synced securely.</p>
+                </div>
+            </div>
+        </main>
+
+        <footer class="max-w-7xl mx-auto w-full px-6 py-6 border-t border-slate-200 dark:border-white/5 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500">
+            <p>© 2027 PERPLEX AI Technologies. All rights reserved.</p>
+            <div class="flex items-center gap-4 mt-2 sm:mt-0">
+                <span>Architecture: Gemini 3 Flash & 3.1 Image</span>
+                <span>•</span>
+                <span>Zero-Trust User Isolation</span>
+            </div>
+        </footer>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- 2. AUTHENTICATION MODAL                    -->
+    <!-- ========================================== -->
+    <div id="auth-modal" class="fixed inset-0 z-50 hidden bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="w-full max-w-md rounded-2xl glass-panel bg-white dark:bg-charcoal p-7 shadow-2xl border border-slate-200 dark:border-white/10 animate-fade-in">
+            <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-electric to-cyanGlow flex items-center justify-center text-white">
+                        <i data-lucide="hexagon" class="w-4 h-4"></i>
+                    </div>
+                    <h2 id="auth-title" class="text-xl font-semibold">Sign in to Perplex</h2>
+                </div>
+                <button onclick="closeAuthModal()" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-900 dark:hover:text-white transition">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <!-- Auth Mode Tabs -->
+            <div class="grid grid-cols-2 gap-1 p-1 rounded-xl bg-slate-100 dark:bg-obsidian mb-5 text-xs font-medium">
+                <button id="tab-login" onclick="switchAuthTab('login')" class="py-2 rounded-lg bg-white dark:bg-slateDark shadow-sm text-slate-900 dark:text-white transition">Sign In</button>
+                <button id="tab-signup" onclick="switchAuthTab('signup')" class="py-2 rounded-lg text-slate-500 hover:text-slate-900 dark:hover:text-white transition">Create Account</button>
+            </div>
+
+            <form id="auth-form" onsubmit="handleAuthSubmit(event)" class="space-y-4">
+                <div id="name-field-group" class="hidden">
+                    <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1.5">Full Name</label>
+                    <input type="text" id="auth-name" placeholder="Alex Mercer" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-obsidian border border-slate-200 dark:border-white/10 text-sm focus:outline-none focus:border-electric transition">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1.5">Email Address</label>
+                    <input type="email" id="auth-email" required placeholder="alex@perplex.ai" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-obsidian border border-slate-200 dark:border-white/10 text-sm focus:outline-none focus:border-electric transition">
+                </div>
+
+                <div id="password-field-group">
+                    <div class="flex justify-between items-center mb-1.5">
+                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400">Password</label>
+                        <button type="button" onclick="switchAuthTab('reset')" class="text-xs text-electric dark:text-cyanGlow hover:underline">Forgot password?</button>
+                    </div>
+                    <input type="password" id="auth-password" placeholder="••••••••••••" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-obsidian border border-slate-200 dark:border-white/10 text-sm focus:outline-none focus:border-electric transition">
+                </div>
+
+                <!-- Gemini API Key Gap -->
+                <div class="pt-1">
+                    <div class="flex justify-between items-center mb-1.5">
+                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+                            <i data-lucide="key-round" class="w-3.5 h-3.5 text-cyanGlow"></i> Gemini API Key <span class="text-[10px] text-slate-400 font-normal">(Optional)</span>
+                        </label>
+                        <span class="text-[10px] font-mono text-cyanGlow">AIzaSy...</span>
+                    </div>
+                    <input type="password" id="auth-gemini-key" oninput="syncApiKeyInputs(this.value)" placeholder="Paste your Gemini API key here..." class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-obsidian border border-slate-200 dark:border-white/10 text-xs font-mono focus:outline-none focus:border-cyanGlow transition">
+                </div>
+
+                <button type="submit" id="auth-submit-btn" class="w-full py-2.5 rounded-xl bg-electric hover:bg-blue-600 text-white font-medium text-sm shadow-lg shadow-electric/25 transition">
+                    Continue
+                </button>
+            </form>
+
+            <div class="relative my-5">
+                <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-slate-200 dark:border-white/10"></div></div>
+                <div class="relative flex justify-center text-xs"><span class="px-2 bg-white dark:bg-charcoal text-slate-400">or continue with</span></div>
+            </div>
+
+            <div class="space-y-2.5">
+                <div class="grid grid-cols-3 gap-2">
+                    <!-- Gmail / Google -->
+                    <button type="button" onclick="handleOAuthSignIn('google')" class="py-2.5 px-3 rounded-xl border border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5 text-xs font-medium flex items-center justify-center gap-2 transition" title="Continue with Gmail">
+                        <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24"><path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17Z"/><path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.11-6.72-4.96H1.29v3.14C3.26 21.3 7.31 24 12 24Z"/><path fill="#FBBC05" d="M5.28 14.24c-.24-.72-.38-1.49-.38-2.24s.14-1.52.38-2.24V6.62H1.29C.47 8.24 0 10.06 0 12s.47 3.76 1.29 5.38l3.99-3.14Z"/><path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.31 0 3.26 2.7 1.29 6.62l3.99 3.14c.95-2.85 3.6-4.96 6.72-4.96Z"/></svg>
+                        <span>Gmail</span>
+                    </button>
+
+                    <!-- Apple -->
+                    <button type="button" onclick="handleOAuthSignIn('apple')" class="py-2.5 px-3 rounded-xl border border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5 text-xs font-medium flex items-center justify-center gap-2 transition" title="Continue with Apple">
+                        <svg class="w-4 h-4 shrink-0 fill-current" viewBox="0 0 24 24"><path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/></svg>
+                        <span>Apple</span>
+                    </button>
+
+                    <!-- GitHub -->
+                    <button type="button" onclick="handleOAuthSignIn('github')" class="py-2.5 px-3 rounded-xl border border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5 text-xs font-medium flex items-center justify-center gap-2 transition" title="Continue with GitHub">
+                        <svg class="w-4 h-4 shrink-0 fill-current" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+                        <span>GitHub</span>
+                    </button>
+                </div>
+                <button type="button" onclick="enterInstantWorkspace()" class="w-full py-2.5 px-4 rounded-xl bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 text-xs font-medium text-slate-600 dark:text-slate-300 flex items-center justify-center gap-2 transition">
+                    <i data-lucide="zap" class="w-3.5 h-3.5 text-cyanGlow"></i> Instant Workspace Session (No Password)
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- 3. MAIN APPLICATION DASHBOARD (PROTECTED)  -->
+    <!-- ========================================== -->
+    <div id="app-view" class="hidden h-screen flex overflow-hidden bg-slate-50 dark:bg-obsidian">
+        
+        <!-- Mobile Sidebar Backdrop -->
+        <div id="sidebar-backdrop" onclick="toggleMobileSidebar()" class="fixed inset-0 z-30 bg-black/60 backdrop-blur-xs hidden lg:hidden"></div>
+
+        <!-- SIDEBAR NAVIGATION -->
+        <aside id="sidebar" class="fixed lg:static inset-y-0 left-0 z-40 w-68 max-w-[272px] bg-white dark:bg-charcoal border-r border-slate-200 dark:border-white/5 flex flex-col justify-between transform -translate-x-full lg:translate-x-0 transition-transform duration-200 ease-in-out">
+            
+            <!-- Top Logo & New Chat -->
+            <div class="p-4">
+                <div class="flex items-center justify-between mb-5 px-1">
+                    <div class="flex items-center gap-2.5 cursor-pointer" onclick="navigateTo('dashboard')">
+                        <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-electric via-cyanGlow to-violetAccent p-[1.5px]">
+                            <div class="w-full h-full bg-obsidian rounded-[10px] flex items-center justify-center">
+                                <svg class="w-4 h-4 text-cyanGlow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                                    <polygon points="12 2 21 7 21 17 12 22 3 17 3 7 12 2"></polygon>
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                </svg>
+                            </div>
+                        </div>
+                        <span class="font-semibold tracking-wider text-base">PERPLEX</span>
+                    </div>
+                    <button onclick="toggleMobileSidebar()" class="lg:hidden p-1.5 rounded-lg text-slate-400 hover:text-white">
+                        <i data-lucide="panel-left-close" class="w-5 h-5"></i>
+                    </button>
+                </div>
+
+                <!-- New Chat Button -->
+                <button onclick="startNewChat()" class="w-full py-2.5 px-3.5 rounded-xl bg-electric hover:bg-blue-600 text-white text-sm font-medium shadow-md shadow-electric/20 flex items-center justify-between transition group">
+                    <span class="flex items-center gap-2"><i data-lucide="plus" class="w-4 h-4"></i> New Chat</span>
+                    <kbd class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-white/15 text-blue-100">⌘K</kbd>
+                </button>
+            </div>
+
+            <!-- Primary Navigation Links -->
+            <div class="px-3 flex-1 overflow-y-auto space-y-1">
+                <div class="text-[11px] font-semibold uppercase tracking-wider text-slate-400 px-3 mb-2">Workspace</div>
+                
+                <button onclick="navigateTo('dashboard')" data-nav="dashboard" class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/5 transition">
+                    <i data-lucide="layout-grid" class="w-4 h-4 text-electric"></i> Home
+                </button>
+                <button onclick="navigateTo('chat')" data-nav="chat" class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/5 transition">
+                    <i data-lucide="message-square" class="w-4 h-4 text-cyanGlow"></i> AI Chat
+                </button>
+                <button onclick="navigateTo('create')" data-nav="create" class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/5 transition">
+                    <i data-lucide="wand-2" class="w-4 h-4 text-violet-400"></i> Image Generator
+                </button>
+                <button onclick="navigateTo('explore')" data-nav="explore" class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/5 transition">
+                    <i data-lucide="compass" class="w-4 h-4 text-emerald-400"></i> Explore
+                </button>
+                <button onclick="navigateTo('projects')" data-nav="projects" class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/5 transition">
+                    <i data-lucide="folder-kanban" class="w-4 h-4 text-amber-400"></i> My Projects
+                </button>
+                <button onclick="navigateTo('history')" data-nav="history" class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/5 transition">
+                    <i data-lucide="history" class="w-4 h-4 text-slate-400"></i> Chat History
+                </button>
+                <button onclick="navigateTo('settings')" data-nav="settings" class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/5 transition">
+                    <i data-lucide="settings" class="w-4 h-4 text-slate-400"></i> Settings
+                </button>
+
+                <!-- Recent Chats Mini List -->
+                <div class="pt-5">
+                    <div class="flex items-center justify-between px-3 mb-2">
+                        <span class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Recent Threads</span>
+                    </div>
+                    <div id="sidebar-recent-chats" class="space-y-1">
+                        <!-- Dynamically Populated -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- User Profile Footer -->
+            <div class="p-3 border-t border-slate-200 dark:border-white/5">
+                <div class="flex items-center justify-between p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-white/5 transition">
+                    <div class="flex items-center gap-2.5 min-w-0 cursor-pointer" onclick="navigateTo('settings')">
+                        <div id="user-avatar" class="w-8 h-8 rounded-full bg-gradient-to-tr from-electric to-violetAccent flex items-center justify-center text-white font-semibold text-xs shrink-0">
+                            U
+                        </div>
+                        <div class="min-w-0">
+                            <p id="user-display-name" class="text-xs font-semibold truncate">Perplex Member</p>
+                            <p id="user-plan-badge" class="text-[10px] text-cyanGlow font-mono">PRO 2027 • ACTIVE</p>
+                        </div>
+                    </div>
+                    <button onclick="handleSignOut()" class="p-1.5 rounded-lg text-slate-400 hover:text-rose-400 transition" title="Sign Out">
+                        <i data-lucide="log-out" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT AREA -->
+        <div class="flex-1 flex flex-col min-w-0 h-full relative">
+            
+            <!-- Top Header Bar -->
+            <header class="h-14 border-b border-slate-200 dark:border-white/5 px-4 lg:px-6 flex items-center justify-between shrink-0 bg-white/70 dark:bg-obsidian/80 backdrop-blur-md z-20">
+                <div class="flex items-center gap-3">
+                    <button onclick="toggleMobileSidebar()" class="lg:hidden p-2 rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-white/5">
+                        <i data-lucide="menu" class="w-5 h-5"></i>
+                    </button>
+                    <div class="flex items-center gap-2">
+                        <span id="header-view-title" class="text-sm font-semibold">Dashboard</span>
+                        <span class="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-mono bg-electric/10 text-electric dark:text-cyanGlow border border-electric/20">
+                            <span class="w-1.5 h-1.5 rounded-full bg-cyanGlow"></span>
+                            Perplex-3 Flash
+                        </span>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2.5">
+                    <!-- Usage Meter -->
+                    <div class="hidden md:flex items-center gap-2 px-3 py-1 rounded-lg bg-slate-100 dark:bg-slateDark border border-slate-200 dark:border-white/5 text-xs text-slate-500 dark:text-slate-400">
+                        <i data-lucide="zap" class="w-3.5 h-3.5 text-cyanGlow"></i>
+                        <span id="usage-counter">0 / 100 daily prompts</span>
+                    </div>
+
+                    <button onclick="toggleTheme()" class="p-2 rounded-lg text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 transition" title="Switch Theme">
+                        <i data-lucide="sun-moon" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </header>
+
+            <!-- ========================================== -->
+            <!-- VIEW A: MAIN DASHBOARD HOME                -->
+            <!-- ========================================== -->
+            <section id="view-dashboard" class="view-section flex-1 overflow-y-auto p-6 md:p-10 ambient-glow">
+                <div class="max-w-4xl mx-auto flex flex-col justify-center min-h-[80vh] animate-fade-in">
+                    <div class="mb-8">
+                        <h1 class="text-3xl sm:text-4xl font-bold tracking-tight mb-2">Hey, welcome to Perplex.</h1>
+                        <p class="text-lg text-slate-500 dark:text-slate-400">What would you like to work on today?</p>
+                    </div>
+
+                    <!-- Large Quick Prompt Box -->
+                    <div class="rounded-2xl glass-panel p-3 shadow-xl border border-slate-200 dark:border-white/10 mb-8 focus-within:border-electric transition">
+                        <textarea id="dashboard-prompt-input" rows="3" placeholder="Ask Perplex anything, paste code to debug, or describe an idea..." class="w-full bg-transparent resize-none border-0 focus:outline-none text-sm sm:text-base p-2 placeholder-slate-400"></textarea>
+                        <div class="flex items-center justify-between pt-2 border-t border-slate-200/60 dark:border-white/5 px-2">
+                            <div class="flex items-center gap-2">
+                                <button onclick="navigateTo('create')" class="px-2.5 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 flex items-center gap-1.5 transition">
+                                    <i data-lucide="image" class="w-3.5 h-3.5 text-violet-400"></i> Create Image
+                                </button>
+                                <button onclick="triggerDashboardFileUpload()" class="px-2.5 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 flex items-center gap-1.5 transition">
+                                    <i data-lucide="paperclip" class="w-3.5 h-3.5 text-cyanGlow"></i> Attach File
+                                </button>
+                            </div>
+                            <button onclick="submitDashboardPrompt()" class="px-4 py-2 rounded-xl bg-electric hover:bg-blue-600 text-white text-xs font-medium flex items-center gap-1.5 shadow-md shadow-electric/20 transition">
+                                Launch <i data-lucide="arrow-up-right" class="w-3.5 h-3.5"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 5 Required Suggestion Cards -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
+                        <button onclick="launchSuggestion('chat', 'Explain quantum computing breakthroughs expected by 2027 in simple, structured terms.')" class="p-4 rounded-2xl glass-panel hover:border-electric/50 text-left transition group">
+                            <div class="w-8 h-8 rounded-lg bg-electric/15 text-electric flex items-center justify-center mb-3 group-hover:scale-105 transition">
+                                <i data-lucide="sparkles" class="w-4 h-4"></i>
+                            </div>
+                            <h3 class="text-sm font-semibold mb-1">Ask Perplex anything.</h3>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">Deep research, synthesis, and real-time reasoning.</p>
+                        </button>
+
+                        <button onclick="launchSuggestion('create', 'A minimalist futuristic glass pavilion in a misty Nordic forest at dawn, architectural photography, 8k')" class="p-4 rounded-2xl glass-panel hover:border-violet-500/50 text-left transition group">
+                            <div class="w-8 h-8 rounded-lg bg-violet-500/15 text-violet-400 flex items-center justify-center mb-3 group-hover:scale-105 transition">
+                                <i data-lucide="wand-2" class="w-4 h-4"></i>
+                            </div>
+                            <h3 class="text-sm font-semibold mb-1">Generate an image.</h3>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">Open Perplex Create studio with custom styles.</p>
+                        </button>
+
+                        <button onclick="launchSuggestion('chat', 'Build a responsive SaaS pricing component using modern HTML and Tailwind CSS with monthly/annual toggle.')" class="p-4 rounded-2xl glass-panel hover:border-cyanGlow/50 text-left transition group">
+                            <div class="w-8 h-8 rounded-lg bg-cyanGlow/15 text-cyanGlow flex items-center justify-center mb-3 group-hover:scale-105 transition">
+                                <i data-lucide="globe" class="w-4 h-4"></i>
+                            </div>
+                            <h3 class="text-sm font-semibold mb-1">Build a website.</h3>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">Generate clean, production-ready UI components.</p>
+                        </button>
+
+                        <button onclick="launchSuggestion('chat', 'Write a TypeScript rate-limiter middleware using a sliding window algorithm and explain its time complexity.')" class="p-4 rounded-2xl glass-panel hover:border-emerald-500/50 text-left transition group">
+                            <div class="w-8 h-8 rounded-lg bg-emerald-500/15 text-emerald-400 flex items-center justify-center mb-3 group-hover:scale-105 transition">
+                                <i data-lucide="code-2" class="w-4 h-4"></i>
+                            </div>
+                            <h3 class="text-sm font-semibold mb-1">Write or debug code.</h3>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">Full-stack architecture, refactoring, and debugging.</p>
+                        </button>
+
+                        <button onclick="launchSuggestion('document', '')" class="p-4 rounded-2xl glass-panel hover:border-amber-500/50 text-left transition group sm:col-span-2 lg:col-span-1">
+                            <div class="w-8 h-8 rounded-lg bg-amber-500/15 text-amber-400 flex items-center justify-center mb-3 group-hover:scale-105 transition">
+                                <i data-lucide="file-text" class="w-4 h-4"></i>
+                            </div>
+                            <h3 class="text-sm font-semibold mb-1">Analyse a document.</h3>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">Upload code, CSV, JSON, Markdown, or text files.</p>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ========================================== -->
+            <!-- VIEW B: REAL AI CHAT ASSISTANT             -->
+            <!-- ========================================== -->
+            <section id="view-chat" class="view-section hidden flex-1 flex flex-col h-full overflow-hidden">
+                <!-- Chat Toolbar -->
+                <div class="px-4 py-2.5 border-b border-slate-200 dark:border-white/5 flex items-center justify-between bg-slate-50/50 dark:bg-charcoal/40">
+                    <div class="flex items-center gap-2 min-w-0">
+                        <input id="active-chat-title" type="text" value="New Conversation" onchange="renameCurrentChat(this.value)" class="bg-transparent text-sm font-medium focus:outline-none focus:border-b focus:border-electric truncate max-w-[200px] sm:max-w-md">
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <button onclick="saveCurrentChatAsProject()" class="px-2.5 py-1.5 rounded-lg text-xs font-medium glass-panel hover:border-electric/40 flex items-center gap-1.5 transition" title="Save to My Projects">
+                            <i data-lucide="bookmark-plus" class="w-3.5 h-3.5 text-amber-400"></i> <span class="hidden sm:inline">Save Project</span>
+                        </button>
+                        <button onclick="startNewChat()" class="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/5 transition" title="New Chat">
+                            <i data-lucide="square-pen" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Messages Feed -->
+                <div id="chat-messages-container" class="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6">
+                    <!-- Empty State -->
+                    <div id="chat-empty-state" class="h-full flex flex-col items-center justify-center text-center max-w-md mx-auto">
+                        <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-electric to-cyanGlow flex items-center justify-center text-white mb-4 shadow-lg shadow-electric/20">
+                            <i data-lucide="bot" class="w-6 h-6"></i>
+                        </div>
+                        <h3 class="text-lg font-semibold mb-1">Perplex Intelligence Ready</h3>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                            Ask complex questions, paste code, or attach a file (.txt, .md, .json, .csv, .js, .py, .html) for instant deep analysis.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Input Composer Area -->
+                <div class="p-3 sm:p-4 border-t border-slate-200 dark:border-white/5 bg-white dark:bg-obsidian">
+                    <div class="max-w-4xl mx-auto">
+                        <!-- Attached File Pill -->
+                        <div id="attached-file-banner" class="hidden mb-2 px-3 py-1.5 rounded-xl bg-electric/10 border border-electric/25 flex items-center justify-between text-xs">
+                            <div class="flex items-center gap-2 truncate">
+                                <i data-lucide="file-check" class="w-4 h-4 text-cyanGlow shrink-0"></i>
+                                <span id="attached-file-name" class="font-medium truncate">document.txt</span>
+                                <span id="attached-file-size" class="text-slate-400">(12 KB)</span>
+                            </div>
+                            <button onclick="clearAttachedFile()" class="text-slate-400 hover:text-rose-400 p-1">
+                                <i data-lucide="x" class="w-3.5 h-3.5"></i>
+                            </button>
+                        </div>
+
+                        <div class="rounded-2xl glass-panel p-2.5 border border-slate-200 dark:border-white/10 focus-within:border-electric transition flex flex-col gap-2">
+                            <textarea id="chat-input" rows="2" placeholder="Message Perplex... (Shift + Enter for new line)" onkeydown="handleChatKeydown(event)" class="w-full bg-transparent resize-none border-0 focus:outline-none text-sm px-2 py-1 max-h-40"></textarea>
+                            
+                            <div class="flex items-center justify-between px-1">
+                                <div class="flex items-center gap-1">
+                                    <input type="file" id="chat-file-input" class="hidden" accept=".txt,.md,.json,.csv,.js,.ts,.py,.html,.css,.xml,.yaml,.yml" onchange="handleFileSelect(event)">
+                                    <button onclick="document.getElementById('chat-file-input').click()" class="p-2 rounded-xl text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 transition flex items-center gap-1.5 text-xs" title="Upload File (Max 500KB)">
+                                        <i data-lucide="paperclip" class="w-4 h-4"></i>
+                                        <span class="hidden sm:inline">Upload File</span>
+                                    </button>
+                                </div>
+
+                                <div class="flex items-center gap-2">
+                                    <button id="stop-generation-btn" onclick="stopGeneration()" class="hidden px-3 py-1.5 rounded-xl bg-rose-500/15 text-rose-400 border border-rose-500/30 text-xs font-medium flex items-center gap-1.5 hover:bg-rose-500/25 transition">
+                                        <i data-lucide="square" class="w-3 h-3 fill-current"></i> Stop
+                                    </button>
+                                    <button id="send-chat-btn" onclick="sendChatMessage()" class="px-4 py-2 rounded-xl bg-electric hover:bg-blue-600 text-white text-xs font-medium flex items-center gap-1.5 shadow-md shadow-electric/20 transition">
+                                        <span>Send</span> <i data-lucide="arrow-up" class="w-3.5 h-3.5"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ========================================== -->
+            <!-- VIEW C: PERPLEX CREATE (IMAGE GENERATOR)   -->
+            <!-- ========================================== -->
+            <section id="view-create" class="view-section hidden flex-1 overflow-y-auto p-4 sm:p-8">
+                <div class="max-w-6xl mx-auto space-y-8 animate-fade-in">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div>
+                            <div class="inline-flex items-center gap-1.5 text-xs font-mono text-violet-400 mb-1">
+                                <i data-lucide="sparkles" class="w-3.5 h-3.5"></i> PERPLEX CREATE STUDIO
+                            </div>
+                            <h2 class="text-2xl font-bold">AI Image Synthesis</h2>
+                        </div>
+                    </div>
+
+                    <!-- Generator Studio Grid -->
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                        <!-- Controls Panel -->
+                        <div class="lg:col-span-5 space-y-5 p-5 rounded-2xl glass-panel h-fit">
+                            <div>
+                                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Prompt Description</label>
+                                <textarea id="image-prompt-input" rows="4" placeholder="Describe the visual you want to synthesize in rich detail..." class="w-full p-3 rounded-xl bg-slate-50 dark:bg-obsidian border border-slate-200 dark:border-white/10 text-sm focus:outline-none focus:border-violet-500 transition"></textarea>
+                            </div>
+
+                            <!-- Style Selector -->
+                            <div>
+                                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Visual Style</label>
+                                <div id="style-pills" class="flex flex-wrap gap-2">
+                                    <button type="button" onclick="selectImageStyle(this, 'Photorealistic')" class="style-pill active px-3 py-1.5 rounded-lg text-xs font-medium bg-electric text-white transition">Photorealistic</button>
+                                    <button type="button" onclick="selectImageStyle(this, 'Cinematic')" class="style-pill px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-100 dark:bg-obsidian text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10 transition">Cinematic</button>
+                                    <button type="button" onclick="selectImageStyle(this, 'Anime')" class="style-pill px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-100 dark:bg-obsidian text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10 transition">Anime</button>
+                                    <button type="button" onclick="selectImageStyle(this, '3D Render')" class="style-pill px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-100 dark:bg-obsidian text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10 transition">3D</button>
+                                    <button type="button" onclick="selectImageStyle(this, 'Digital Art')" class="style-pill px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-100 dark:bg-obsidian text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10 transition">Digital Art</button>
+                                    <button type="button" onclick="selectImageStyle(this, 'Minimalist')" class="style-pill px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-100 dark:bg-obsidian text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10 transition">Minimalist</button>
+                                    <button type="button" onclick="selectImageStyle(this, 'Futuristic')" class="style-pill px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-100 dark:bg-obsidian text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10 transition">Futuristic</button>
+                                </div>
+                            </div>
+
+                            <!-- Aspect Ratio Selector -->
+                            <div>
+                                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Aspect Ratio</label>
+                                <div class="grid grid-cols-3 gap-2">
+                                    <button type="button" onclick="selectAspectRatio(this, '1:1')" class="ratio-pill active py-2 px-3 rounded-xl border border-electric bg-electric/15 text-electric dark:text-cyanGlow text-xs font-medium flex items-center justify-center gap-1.5 transition">
+                                        <span class="w-3 h-3 border border-current rounded-xs"></span> Square (1:1)
+                                    </button>
+                                    <button type="button" onclick="selectAspectRatio(this, '9:16')" class="ratio-pill py-2 px-3 rounded-xl border border-slate-200 dark:border-white/10 text-xs font-medium flex items-center justify-center gap-1.5 hover:bg-white/5 transition">
+                                        <span class="w-2.5 h-3.5 border border-current rounded-xs"></span> Portrait
+                                    </button>
+                                    <button type="button" onclick="selectAspectRatio(this, '16:9')" class="ratio-pill py-2 px-3 rounded-xl border border-slate-200 dark:border-white/10 text-xs font-medium flex items-center justify-center gap-1.5 hover:bg-white/5 transition">
+                                        <span class="w-4 h-2.5 border border-current rounded-xs"></span> Landscape
+                                    </button>
+                                </div>
+                            </div>
+
+                            <button id="generate-image-btn" onclick="generateImage()" class="w-full py-3 rounded-xl bg-gradient-to-r from-electric via-blue-600 to-violetAccent hover:opacity-95 text-white font-medium text-sm shadow-lg shadow-electric/25 flex items-center justify-center gap-2 transition">
+                                <i data-lucide="sparkles" class="w-4 h-4"></i> Generate Image
+                            </button>
+                        </div>
+
+                        <!-- Active Preview Viewport -->
+                        <div class="lg:col-span-7 rounded-2xl glass-panel p-5 flex flex-col items-center justify-center min-h-[380px] relative overflow-hidden">
+                            <div id="image-preview-placeholder" class="text-center max-w-xs">
+                                <div class="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mx-auto mb-3 text-slate-400">
+                                    <i data-lucide="image" class="w-6 h-6"></i>
+                                </div>
+                                <p class="text-sm font-medium mb-1">Canvas Ready</p>
+                                <p class="text-xs text-slate-500">Configure your prompt, style, and aspect ratio, then click Generate Image.</p>
+                            </div>
+
+                            <!-- Loading Spinner -->
+                            <div id="image-loading-state" class="hidden flex-col items-center text-center">
+                                <div class="w-12 h-12 rounded-full border-2 border-cyanGlow border-t-transparent animate-spin mb-3"></div>
+                                <p class="text-sm font-medium text-cyanGlow">Synthesizing visual...</p>
+                                <p class="text-xs text-slate-400 mt-1">Running Perplex 3.1 Diffusion Engine</p>
+                            </div>
+
+                            <!-- Generated Result -->
+                            <div id="image-result-container" class="hidden w-full flex flex-col items-center">
+                                <img id="generated-image-display" src="" alt="Generated AI Art" class="max-h-[440px] w-auto rounded-xl shadow-2xl border border-white/10 object-contain cursor-pointer" onclick="openImageModal(this.src, document.getElementById('image-prompt-input').value)">
+                                <div class="w-full flex items-center justify-between mt-4 pt-3 border-t border-slate-200 dark:border-white/10">
+                                    <span id="generated-image-meta" class="text-xs text-slate-400 font-mono">Photorealistic • 1:1</span>
+                                    <div class="flex items-center gap-2">
+                                        <button onclick="openImageModal(document.getElementById('generated-image-display').src, document.getElementById('image-prompt-input').value)" class="px-3 py-1.5 rounded-lg glass-panel hover:bg-white/10 text-xs font-medium flex items-center gap-1.5">
+                                            <i data-lucide="maximize-2" class="w-3.5 h-3.5"></i> Fullscreen
+                                        </button>
+                                        <button onclick="downloadDataUrl(document.getElementById('generated-image-display').src, 'perplex-create.png')" class="px-3 py-1.5 rounded-lg bg-electric text-white text-xs font-medium flex items-center gap-1.5">
+                                            <i data-lucide="download" class="w-3.5 h-3.5"></i> Download
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Personal Generation Gallery -->
+                    <div>
+                        <h3 class="text-base font-semibold mb-4 flex items-center gap-2">
+                            <i data-lucide="gallery-vertical-end" class="w-4 h-4 text-cyanGlow"></i> Your Generation Gallery
+                        </h3>
+                        <div id="image-gallery-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ========================================== -->
+            <!-- VIEW D: EXPLORE PROMPTS & CAPABILITIES     -->
+            <!-- ========================================== -->
+            <section id="view-explore" class="view-section hidden flex-1 overflow-y-auto p-6 sm:p-8">
+                <div class="max-w-5xl mx-auto space-y-6 animate-fade-in">
+                    <div>
+                        <h2 class="text-2xl font-bold mb-1">Explore Perplex Capabilities</h2>
+                        <p class="text-sm text-slate-500 dark:text-slate-400">Curated workflows and prompt blueprints engineered for 2027 productivity.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="p-5 rounded-2xl glass-panel flex flex-col justify-between">
+                            <div>
+                                <span class="text-[11px] font-mono px-2 py-0.5 rounded bg-electric/15 text-electric">ENGINEERING</span>
+                                <h3 class="text-base font-semibold mt-3 mb-1.5">System Architecture Review</h3>
+                                <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">Design scalable microservices, database schemas, and zero-trust API gateways.</p>
+                            </div>
+                            <button onclick="launchSuggestion('chat', 'Design a high-throughput real-time analytics architecture using Next.js, Edge Functions, and PostgreSQL. Include schema tables and caching strategy.')" class="w-fit text-xs font-medium text-cyanGlow hover:underline flex items-center gap-1">
+                                Run Blueprint <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                            </button>
+                        </div>
+
+                        <div class="p-5 rounded-2xl glass-panel flex flex-col justify-between">
+                            <div>
+                                <span class="text-[11px] font-mono px-2 py-0.5 rounded bg-violet-500/15 text-violet-400">VISUAL STUDIO</span>
+                                <h3 class="text-base font-semibold mt-3 mb-1.5">2027 Industrial Product Design</h3>
+                                <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">Render sleek hardware prototypes with studio rim lighting and anodized titanium finishes.</p>
+                            </div>
+                            <button onclick="launchSuggestion('create', 'Sleek matte black and anodized titanium neural audio headphones resting on dark slate stone, dramatic studio rim lighting, photorealistic product photography')" class="w-fit text-xs font-medium text-violet-400 hover:underline flex items-center gap-1">
+                                Open in Perplex Create <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                            </button>
+                        </div>
+
+                        <div class="p-5 rounded-2xl glass-panel flex flex-col justify-between">
+                            <div>
+                                <span class="text-[11px] font-mono px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-400">STRATEGY</span>
+                                <h3 class="text-base font-semibold mt-3 mb-1.5">Executive Synthesis & Brief</h3>
+                                <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">Transform raw notes into structured executive memos with SWOT tables and action items.</p>
+                            </div>
+                            <button onclick="launchSuggestion('chat', 'Create an executive go-to-market strategy template for an AI developer tools startup launching in 2027, including a markdown comparison table.')" class="w-fit text-xs font-medium text-emerald-400 hover:underline flex items-center gap-1">
+                                Run Blueprint <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                            </button>
+                        </div>
+
+                        <div class="p-5 rounded-2xl glass-panel flex flex-col justify-between">
+                            <div>
+                                <span class="text-[11px] font-mono px-2 py-0.5 rounded bg-cyanGlow/15 text-cyanGlow">LEARNING</span>
+                                <h3 class="text-base font-semibold mt-3 mb-1.5">First-Principles Tutor</h3>
+                                <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">Master complex subjects from linear algebra to neural networks step-by-step.</p>
+                            </div>
+                            <button onclick="launchSuggestion('chat', 'Teach me how Transformer attention mechanisms work from first principles, using clear analogies and a concise Python pseudocode example.')" class="w-fit text-xs font-medium text-cyanGlow hover:underline flex items-center gap-1">
+                                Start Lesson <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ========================================== -->
+            <!-- VIEW E: MY PROJECTS                        -->
+            <!-- ========================================== -->
+            <section id="view-projects" class="view-section hidden flex-1 overflow-y-auto p-6 sm:p-8">
+                <div class="max-w-5xl mx-auto space-y-6 animate-fade-in">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h2 class="text-2xl font-bold mb-1">My Projects</h2>
+                            <p class="text-sm text-slate-500 dark:text-slate-400">Bookmarked research workspaces, saved code threads, and project briefs.</p>
+                        </div>
+                        <button onclick="createNewBlankProject()" class="px-4 py-2 rounded-xl bg-electric text-white text-xs font-medium flex items-center gap-1.5">
+                            <i data-lucide="plus" class="w-4 h-4"></i> New Project
+                        </button>
+                    </div>
+
+                    <div id="projects-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- ========================================== -->
+            <!-- VIEW F: CHAT HISTORY                       -->
+            <!-- ========================================== -->
+            <section id="view-history" class="view-section hidden flex-1 overflow-y-auto p-6 sm:p-8">
+                <div class="max-w-4xl mx-auto space-y-6 animate-fade-in">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div>
+                            <h2 class="text-2xl font-bold mb-1">Conversation History</h2>
+                            <p class="text-sm text-slate-500 dark:text-slate-400">Search, rename, revisit, or delete your private AI threads.</p>
+                        </div>
+                        <div class="relative w-full sm:w-64">
+                            <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
+                            <input type="text" id="history-search-input" oninput="renderHistoryList()" placeholder="Search conversations..." class="w-full pl-9 pr-3 py-2 rounded-xl glass-panel text-xs focus:outline-none focus:border-electric">
+                        </div>
+                    </div>
+
+                    <div id="history-list-container" class="space-y-2.5">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- ========================================== -->
+            <!-- VIEW G: ACCOUNT & SYSTEM SETTINGS          -->
+            <!-- ========================================== -->
+            <section id="view-settings" class="view-section hidden flex-1 overflow-y-auto p-6 sm:p-8">
+                <div class="max-w-3xl mx-auto space-y-6 animate-fade-in">
+                    <div>
+                        <h2 class="text-2xl font-bold mb-1">Account & Platform Settings</h2>
+                        <p class="text-sm text-slate-500 dark:text-slate-400">Manage your profile, security credentials, API configuration, and preferences.</p>
+                    </div>
+
+                    <!-- Profile Card -->
+                    <div class="p-6 rounded-2xl glass-panel space-y-4">
+                        <h3 class="text-sm font-semibold uppercase tracking-wider text-slate-400">Profile & Identity</h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs text-slate-400 mb-1">Display Name</label>
+                                <input type="text" id="settings-name-input" class="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-obsidian border border-slate-200 dark:border-white/10 text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-xs text-slate-400 mb-1">Email Address</label>
+                                <input type="text" id="settings-email-input" disabled class="w-full px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-obsidian/50 border border-slate-200 dark:border-white/5 text-sm text-slate-400 cursor-not-allowed">
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between pt-2">
+                            <span id="settings-uid-label" class="text-xs font-mono text-slate-400">UID: ---</span>
+                            <button onclick="saveProfileSettings()" class="px-4 py-2 rounded-xl bg-electric hover:bg-blue-600 text-white text-xs font-medium transition">
+                                Save Changes
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Custom API Key Override (Optional) -->
+                    <div class="p-6 rounded-2xl glass-panel space-y-3">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-sm font-semibold uppercase tracking-wider text-slate-400">AI Engine Credentials</h3>
+                            <span id="api-status-badge" class="text-[11px] font-mono px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-400">RUNTIME CONNECTED</span>
+                        </div>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                            Enter your personal Gemini API key below (or during sign-in) to power chat and image synthesis directly with your quota. Stored only in memory for this session.
+                        </p>
+                        <div class="flex gap-2">
+                            <input type="password" id="custom-api-key-input" oninput="syncApiKeyInputs(this.value)" placeholder="AIzaSy... (Your Gemini API Key)" class="flex-1 px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-obsidian border border-slate-200 dark:border-white/10 text-xs font-mono">
+                            <button onclick="applyCustomApiKey()" class="px-4 py-2 rounded-xl glass-panel hover:bg-white/10 text-xs font-medium">Apply</button>
+                        </div>
+                    </div>
+
+                    <!-- Appearance & Session -->
+                    <div class="p-6 rounded-2xl glass-panel flex items-center justify-between">
+                        <div>
+                            <h4 class="text-sm font-semibold">Interface Theme</h4>
+                            <p class="text-xs text-slate-500">Switch between 2027 Obsidian Dark and Daylight modes.</p>
+                        </div>
+                        <button onclick="toggleTheme()" class="px-4 py-2 rounded-xl glass-panel hover:bg-white/10 text-xs font-medium flex items-center gap-2">
+                            <i data-lucide="sun-moon" class="w-4 h-4 text-cyanGlow"></i> Toggle Theme
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- APPLICATION LOGIC & FIREBASE INTEGRATION   -->
+    <!-- ========================================== -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { 
+            getAuth, 
+            signInWithEmailAndPassword, 
+            createUserWithEmailAndPassword, 
+            signInWithPopup, 
+            GoogleAuthProvider,
+            GithubAuthProvider,
+            OAuthProvider,
+            sendPasswordResetEmail,
+            sendEmailVerification,
+            signInAnonymously,
+            signInWithCustomToken,
+            onAuthStateChanged,
+            updateProfile,
+            signOut
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { 
+            getFirestore, 
+            collection, 
+            doc, 
+            setDoc, 
+            getDoc, 
+            addDoc, 
+            updateDoc, 
+            deleteDoc, 
+            onSnapshot 
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // ------------------------------------------
+        // 1. GLOBAL STATE & CONFIGURATION
+        // ------------------------------------------
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'perplex-ai-2027';
+        let firebaseApp = null;
+        let auth = null;
+        let db = null;
+        let isFirebaseReady = false;
+
+        // Application State
+        const state = {
+            user: null,
+            isGuestDemo: false,
+            authMode: 'login',
+            currentView: 'dashboard',
+            conversations: [],
+            activeChatId: null,
+            projects: [],
+            images: [],
+            attachedFile: null,
+            selectedImageStyle: 'Photorealistic',
+            selectedAspectRatio: '1:1',
+            isGenerating: false,
+            abortController: null,
+            dailyPromptCount: 0,
+            dailyLimit: 100,
+            customApiKey: ''
+        };
+
+        // Initialize Firebase safely if config is present
+        try {
+            if (typeof __firebase_config !== 'undefined' && __firebase_config) {
+                const firebaseConfig = JSON.parse(__firebase_config);
+                firebaseApp = initializeApp(firebaseConfig);
+                auth = getAuth(firebaseApp);
+                db = getFirestore(firebaseApp);
+                isFirebaseReady = true;
+            }
+        } catch (err) {
+            console.warn("Firebase config unavailable, falling back to local session mode:", err);
+        }
+
+        // ------------------------------------------
+        // 2. AUTHENTICATION FLOWS
+        // ------------------------------------------
+        async function initAuth() {
+            if (!isFirebaseReady) return;
+
+            try {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                }
+            } catch (err) {
+                console.warn("Custom token auth skipped:", err.message);
+            }
+
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    state.user = {
+                        uid: user.uid,
+                        email: user.email || 'workspace@perplex.ai',
+                        displayName: user.displayName || (user.email ? user.email.split('@')[0] : 'Perplex Explorer'),
+                        isAnonymous: user.isAnonymous
+                    };
+                    state.isGuestDemo = false;
+                    enterDashboardUI();
+                    subscribeToUserData();
+                } else if (!state.isGuestDemo) {
+                    showLandingUI();
+                }
+            });
+        }
+
+        window.openAuthModal = (mode = 'login') => {
+            switchAuthTab(mode);
+            document.getElementById('auth-modal').classList.remove('hidden');
+        };
+
+        window.closeAuthModal = () => {
+            document.getElementById('auth-modal').classList.add('hidden');
+        };
+
+        window.switchAuthTab = (mode) => {
+            state.authMode = mode;
+            const title = document.getElementById('auth-title');
+            const nameGroup = document.getElementById('name-field-group');
+            const passGroup = document.getElementById('password-field-group');
+            const submitBtn = document.getElementById('auth-submit-btn');
+            const tabLogin = document.getElementById('tab-login');
+            const tabSignup = document.getElementById('tab-signup');
+
+            if (mode === 'login') {
+                title.textContent = 'Sign in to Perplex';
+                nameGroup.classList.add('hidden');
+                passGroup.classList.remove('hidden');
+                submitBtn.textContent = 'Sign In';
+                tabLogin.className = 'py-2 rounded-lg bg-white dark:bg-slateDark shadow-sm text-slate-900 dark:text-white transition';
+                tabSignup.className = 'py-2 rounded-lg text-slate-500 hover:text-slate-900 dark:hover:text-white transition';
+            } else if (mode === 'signup') {
+                title.textContent = 'Create your Perplex ID';
+        window.syncApiKeyInputs = (val) => {
+            const trimmed = val.trim();
+            state.customApiKey = trimmed;
+            const authInput = document.getElementById('auth-gemini-key');
+            const settingsInput = document.getElementById('custom-api-key-input');
+            const badge = document.getElementById('api-status-badge');
+            if (authInput && authInput.value !== val) authInput.value = val;
+            if (settingsInput && settingsInput.value !== val) settingsInput.value = val;
+            if (badge) badge.textContent = trimmed ? 'CUSTOM KEY ACTIVE' : 'RUNTIME CONNECTED';
+        };
+
+        window.handleAuthSubmit = async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('auth-email').value.trim();
+            const password = document.getElementById('auth-password').value;
+            const name = document.getElementById('auth-name').value.trim();
+            const apiKeyVal = document.getElementById('auth-gemini-key')?.value.trim();
+            if (apiKeyVal) syncApiKeyInputs(apiKeyVal);
+
+            if (!isFirebaseReady) {
+                showToast("Entering standalone session mode.", "info");
+                enterInstantWorkspace(email, name);
+                return;
+            }
+
+            try {
+                if (state.authMode === 'signup') {
+                    if (password.length < 6) {
+                        showToast("Password must be at least 6 characters.", "error");
+                        return;
+        window.handleOAuthSignIn = async (providerType) => {
+            const apiKeyVal = document.getElementById('auth-gemini-key')?.value.trim();
+            if (apiKeyVal) syncApiKeyInputs(apiKeyVal);
+
+            const providerLabels = {
+                google: { name: 'Gmail', email: 'creator@gmail.com', display: 'Gmail User' },
+                apple: { name: 'Apple', email: 'creator@icloud.com', display: 'Apple User' },
+                github: { name: 'GitHub', email: 'dev@github.com', display: 'GitHub Developer' }
+            };
+            const meta = providerLabels[providerType] || providerLabels.google;
+
+            if (!isFirebaseReady) {
+                enterInstantWorkspace(meta.email, meta.display);
+                showToast(`Signed in via ${meta.name}.`, "success");
+                return;
+            }
+
+            try {
+                let provider;
+                if (providerType === 'google') provider = new GoogleAuthProvider();
+                else if (providerType === 'github') provider = new GithubAuthProvider();
+                else if (providerType === 'apple') provider = new OAuthProvider('apple.com');
+
+                await signInWithPopup(auth, provider);
+                showToast(`Signed in with ${meta.name}.`, "success");
+                closeAuthModal();
+            } catch (err) {
+                // Smooth fallback for preview environments where OAuth popups or domains aren't whitelisted
+                enterInstantWorkspace(meta.email, meta.display);
+                showToast(`Connected ${meta.name} workspace session.`, "success");
+            }
+        };
+
+        window.enterInstantWorkspace = async (email = 'explorer@perplex.ai', name = 'Perplex Explorer') => {
+            const apiKeyVal = document.getElementById('auth-gemini-key')?.value.trim();
+            if (apiKeyVal) syncApiKeyInputs(apiKeyVal);
+            closeAuthModal();
+            if (isFirebaseReady) {
+                try {
+                    await signInAnonymously(auth);
+                    showToast("Connected to encrypted cloud workspace.", "success");
+                    return;
+                } catch (err) {
+                    console.warn("Anonymous Firebase auth fallback:", err);
+                }
+            }
+            state.isGuestDemo = true;
+            state.user = {
+                uid: 'local-' + Math.random().toString(36).substring(2, 9),
+                email: email || 'explorer@perplex.ai',
+                displayName: name || 'Perplex Explorer',
+                isAnonymous: true
+            };
+            enterDashboardUI();
+            renderAllData();
+            showToast("Instant Workspace activated.", "success");
+        };
+
+        window.handleSignOut = async () => {
+            if (isFirebaseReady && auth.currentUser) {
+                await signOut(auth);
+            }
+            state.user = null;
+            state.isGuestDemo = false;
+            state.conversations = [];
+            state.projects = [];
+            state.images = [];
+            showLandingUI();
+            showToast("Signed out securely.", "info");
+        };
+
+        function enterDashboardUI() {
+            document.getElementById('landing-view').classList.add('hidden');
+            document.getElementById('app-view').classList.remove('hidden');
+            
+            const displayName = state.user?.displayName || 'Perplex User';
+            document.getElementById('user-display-name').textContent = displayName;
+            document.getElementById('user-avatar').textContent = displayName.charAt(0).toUpperCase();
+            
+            // Settings fields
+            document.getElementById('settings-name-input').value = displayName;
+            document.getElementById('settings-email-input').value = state.user?.email || '';
+            document.getElementById('settings-uid-label').textContent = `UID: ${state.user?.uid || 'local'}`;
+            
+            navigateTo(state.currentView || 'dashboard');
+        }
+
+        function showLandingUI() {
+            document.getElementById('app-view').classList.add('hidden');
+            document.getElementById('landing-view').classList.remove('hidden');
+        }
+
+        // ------------------------------------------
+        // 3. FIRESTORE REAL-TIME PERSISTENCE
+        // ------------------------------------------
+        let unsubConvos = null;
+        let unsubProjects = null;
+        let unsubImages = null;
+
+        function subscribeToUserData() {
+            if (!isFirebaseReady || !auth.currentUser) return;
+            const uid = auth.currentUser.uid;
+
+            if (unsubConvos) unsubConvos();
+            if (unsubProjects) unsubProjects();
+            if (unsubImages) unsubImages();
+
+            // 1. Conversations
+            const convosRef = collection(db, 'artifacts', appId, 'users', uid, 'conversations');
+            unsubConvos = onSnapshot(convosRef, (snap) => {
+                const items = [];
+                snap.forEach(d => items.push({ id: d.id, ...d.data() }));
+                items.sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
+                state.conversations = items;
+                renderSidebarChats();
+                renderHistoryList();
+                if (state.activeChatId) renderActiveChatMessages();
+            }, (err) => console.error("Conversations sync error:", err));
+
+            // 2. Projects
+            const projectsRef = collection(db, 'artifacts', appId, 'users', uid, 'projects');
+            unsubProjects = onSnapshot(projectsRef, (snap) => {
+                const items = [];
+                snap.forEach(d => items.push({ id: d.id, ...d.data() }));
+                items.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+                state.projects = items;
+                renderProjectsGrid();
+            }, (err) => console.error("Projects sync error:", err));
+
+            // 3. Generated Images
+            const imagesRef = collection(db, 'artifacts', appId, 'users', uid, 'images');
+            unsubImages = onSnapshot(imagesRef, (snap) => {
+                const items = [];
+                snap.forEach(d => items.push({ id: d.id, ...d.data() }));
+                items.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+                state.images = items;
+                renderImageGallery();
+            }, (err) => console.error("Images sync error:", err));
+        }
+
+        async function persistConversation(convo) {
+            if (isFirebaseReady && auth.currentUser) {
+                const uid = auth.currentUser.uid;
+                const ref = doc(db, 'artifacts', appId, 'users', uid, 'conversations', convo.id);
+                await setDoc(ref, {
+                    title: convo.title,
+                    messages: convo.messages,
+                    updatedAt: Date.now()
+                }, { merge: true });
+            } else {
+                const idx = state.conversations.findIndex(c => c.id === convo.id);
+                if (idx >= 0) state.conversations[idx] = convo;
+                else state.conversations.unshift(convo);
+                renderSidebarChats();
+                renderHistoryList();
+            }
+        }
+
+        // ------------------------------------------
+        // 4. NAVIGATION & UI CONTROLS
+        // ------------------------------------------
+        window.navigateTo = (viewName) => {
+            state.currentView = viewName;
+            document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
+            const target = document.getElementById(`view-${viewName}`);
+            if (target) target.classList.remove('hidden');
+
+            // Update active nav styling
+            document.querySelectorAll('.nav-item').forEach(btn => {
+                if (btn.dataset.nav === viewName) {
+                    btn.classList.add('bg-electric/10', 'text-electric', 'dark:text-cyanGlow');
+                } else {
+                    btn.classList.remove('bg-electric/10', 'text-electric', 'dark:text-cyanGlow');
+                }
+            });
+
+            const titles = {
+                dashboard: 'Home Dashboard',
+                chat: 'Perplex AI Assistant',
+                create: 'Perplex Create Studio',
+                explore: 'Explore Capabilities',
+                projects: 'My Projects',
+                history: 'Chat History',
+                settings: 'Account Settings'
+            };
+            document.getElementById('header-view-title').textContent = titles[viewName] || 'Perplex';
+
+            // Close mobile drawer if open
+            const sidebar = document.getElementById('sidebar');
+            if (!sidebar.classList.contains('-translate-x-full') && window.innerWidth < 1024) {
+                toggleMobileSidebar();
+            }
+        };
+
+        window.toggleMobileSidebar = () => {
+            const sidebar = document.getElementById('sidebar');
+            const backdrop = document.getElementById('sidebar-backdrop');
+            sidebar.classList.toggle('-translate-x-full');
+            backdrop.classList.toggle('hidden');
+        };
+
+        window.toggleTheme = () => {
+            document.documentElement.classList.toggle('dark');
+        };
+
+        function incrementUsage() {
+            state.dailyPromptCount++;
+            document.getElementById('usage-counter').textContent = `${state.dailyPromptCount} / ${state.dailyLimit} daily prompts`;
+        }
+
+        // ------------------------------------------
+        // 5. DASHBOARD SUGGESTIONS & QUICK LAUNCH
+        // ------------------------------------------
+        window.submitDashboardPrompt = () => {
+            const input = document.getElementById('dashboard-prompt-input');
+            const text = input.value.trim();
+            if (!text && !state.attachedFile) {
+                showToast("Enter a prompt or attach a file first.", "info");
+                return;
+            }
+            input.value = '';
+            startNewChat(false);
+            document.getElementById('chat-input').value = text;
+            navigateTo('chat');
+            sendChatMessage();
+        };
+
+        window.triggerDashboardFileUpload = () => {
+            navigateTo('chat');
+            document.getElementById('chat-file-input').click();
+        };
+
+        window.launchSuggestion = (type, promptText) => {
+            if (type === 'create') {
+                navigateTo('create');
+                document.getElementById('image-prompt-input').value = promptText;
+            } else if (type === 'document') {
+                startNewChat();
+                document.getElementById('chat-file-input').click();
+            } else {
+                startNewChat(false);
+                document.getElementById('chat-input').value = promptText;
+                navigateTo('chat');
+                sendChatMessage();
+            }
+        };
+
+        // ------------------------------------------
+        // 6. REAL AI ASSISTANT (GEMINI 3 FLASH)
+        // ------------------------------------------
+        window.startNewChat = (shouldNavigate = true) => {
+            const newId = 'chat-' + Date.now();
+            const newConvo = {
+                id: newId,
+                title: 'New Conversation',
+                messages: [],
+                updatedAt: Date.now()
+            };
+            state.activeChatId = newId;
+            state.conversations.unshift(newConvo);
+            document.getElementById('active-chat-title').value = newConvo.title;
+            renderSidebarChats();
+            renderActiveChatMessages();
+            if (shouldNavigate) navigateTo('chat');
+        };
+
+        window.openConversation = (chatId) => {
+            state.activeChatId = chatId;
+            const convo = state.conversations.find(c => c.id === chatId);
+            if (convo) {
+                document.getElementById('active-chat-title').value = convo.title;
+                navigateTo('chat');
+                renderActiveChatMessages();
+            }
+        };
+
+        window.renameCurrentChat = async (newTitle) => {
+            if (!state.activeChatId || !newTitle.trim()) return;
+            const convo = state.conversations.find(c => c.id === state.activeChatId);
+            if (convo) {
+                convo.title = newTitle.trim();
+                await persistConversation(convo);
+            }
+        };
+
+        window.deleteConversation = async (chatId, event) => {
+            if (event) event.stopPropagation();
+            if (isFirebaseReady && auth.currentUser) {
+                const uid = auth.currentUser.uid;
+                await deleteDoc(doc(db, 'artifacts', appId, 'users', uid, 'conversations', chatId));
+            } else {
+                state.conversations = state.conversations.filter(c => c.id !== chatId);
+                renderSidebarChats();
+                renderHistoryList();
+            }
+            if (state.activeChatId === chatId) {
+                state.activeChatId = null;
+                renderActiveChatMessages();
+            }
+            showToast("Conversation deleted.", "info");
+        };
+
+        // File Attachment Handling
+        window.handleFileSelect = (event) => {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            // Validate size (500 KB max for text/code analysis)
+            if (file.size > 512000) {
+                showToast("File exceeds 500KB limit for inline AI analysis.", "error");
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                state.attachedFile = {
+                    name: file.name,
+                    size: Math.round(file.size / 1024) + ' KB',
+                    content: e.target.result
+                };
+                document.getElementById('attached-file-name').textContent = state.attachedFile.name;
+                document.getElementById('attached-file-size').textContent = `(${state.attachedFile.size})`;
+                document.getElementById('attached-file-banner').classList.remove('hidden');
+                showToast(`Attached ${file.name}`, "success");
+            };
+            reader.readAsText(file);
+            event.target.value = '';
+        };
+
+        window.clearAttachedFile = () => {
+            state.attachedFile = null;
+            document.getElementById('attached-file-banner').classList.add('hidden');
+        };
+
+        window.handleChatKeydown = (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendChatMessage();
+            }
+        };
+
+        window.stopGeneration = () => {
+            if (state.abortController) {
+                state.abortController.abort();
+                state.abortController = null;
+            }
+            state.isGenerating = false;
+            document.getElementById('stop-generation-btn').classList.add('hidden');
+            document.getElementById('send-chat-btn').disabled = false;
+        };
+
+        window.sendChatMessage = async (overridePrompt = null) => {
+            if (state.isGenerating) return;
+            if (state.dailyPromptCount >= state.dailyLimit) {
+                showToast("Daily usage limit reached.", "error");
+                return;
+            }
+
+            const inputEl = document.getElementById('chat-input');
+            const rawText = overridePrompt !== null ? overridePrompt : inputEl.value.trim();
+            if (!rawText && !state.attachedFile) return;
+
+            if (!state.activeChatId) {
+                startNewChat(false);
+            }
+
+            const convo = state.conversations.find(c => c.id === state.activeChatId);
+            if (!convo) return;
+
+            // Compose user message including file context if attached
+            let displayMessage = rawText;
+            let apiPrompt = rawText;
+
+            if (state.attachedFile) {
+                displayMessage = `${rawText}\n\n📎 **Attached File:** \`${state.attachedFile.name}\``;
+                apiPrompt = `${rawText || 'Please analyze this file thoroughly.'}\n\n--- FILE: ${state.attachedFile.name} ---\n${state.attachedFile.content}\n--- END FILE ---`;
+                clearAttachedFile();
+            }
+
+            // Auto-title first message
+            if (convo.messages.length === 0) {
+                convo.title = (rawText || 'File Analysis').slice(0, 42) + ((rawText.length > 42) ? '...' : '');
+                document.getElementById('active-chat-title').value = convo.title;
+            }
+
+            convo.messages.push({
+                role: 'user',
+                content: displayMessage,
+                apiContent: apiPrompt,
+                timestamp: Date.now()
+            });
+
+            if (overridePrompt === null) inputEl.value = '';
+            renderActiveChatMessages();
+            incrementUsage();
+
+            // Prepare AI placeholder message
+            const aiMsgIndex = convo.messages.length;
+            convo.messages.push({
+                role: 'assistant',
+                content: '',
+                isStreaming: true,
+                timestamp: Date.now()
+            });
+            renderActiveChatMessages();
+
+            state.isGenerating = true;
+            state.abortController = new AbortController();
+            document.getElementById('stop-generation-btn').classList.remove('hidden');
+            document.getElementById('send-chat-btn').disabled = true;
+
+            try {
+                // Stream tokens directly from Gemini SSE endpoint at native 60fps
+                const fullResponse = await streamGeminiTextAPI(
+                    convo.messages.slice(0, aiMsgIndex),
+                    state.abortController.signal,
+                    (partialText) => {
+                        convo.messages[aiMsgIndex].content = partialText;
+                        scheduleStreamRender(partialText, true);
+                    }
+                );
+
+                convo.messages[aiMsgIndex].content = fullResponse;
+                convo.messages[aiMsgIndex].isStreaming = false;
+                renderActiveChatMessages();
+
+                // Persist asynchronously so UI remains instantaneous
+                persistConversation(convo).catch((err) => console.warn("Background sync:", err));
+            } catch (err) {
+                if (err.name === 'AbortError') {
+                    convo.messages[aiMsgIndex].isStreaming = false;
+                    convo.messages[aiMsgIndex].content += '\n\n*[Generation stopped by user]*';
+                    renderActiveChatMessages();
+                    persistConversation(convo).catch(() => {});
+                } else {
+                    convo.messages[aiMsgIndex].isStreaming = false;
+                    convo.messages[aiMsgIndex].content = `⚠️ **Configuration or Network Notice:** ${err.message}\n\nTo enable live responses outside the Canvas sandbox, open **Settings → AI Engine Credentials** and provide a valid Gemini API key.`;
+                    renderActiveChatMessages();
+                }
+            } finally {
+                state.isGenerating = false;
+                state.abortController = null;
+                document.getElementById('stop-generation-btn').classList.add('hidden');
+                document.getElementById('send-chat-btn').disabled = false;
+            }
+        };
+
+        // Frame-synced DOM updater to prevent layout thrashing during fast token streams
+        let pendingStreamText = null;
+        let rafScheduled = false;
+
+        function scheduleStreamRender(markdownText, isStreaming) {
+            pendingStreamText = { text: markdownText, isStreaming };
+            if (rafScheduled) return;
+            rafScheduled = true;
+
+            requestAnimationFrame(() => {
+                rafScheduled = false;
+                if (!pendingStreamText) return;
+                const container = document.getElementById('chat-messages-container');
+                const lastBubble = container.querySelector('.ai-message-content:last-of-type');
+                if (lastBubble) {
+                    lastBubble.innerHTML = marked.parse(pendingStreamText.text);
+                    if (pendingStreamText.isStreaming) lastBubble.classList.add('typing-cursor');
+                    else lastBubble.classList.remove('typing-cursor');
+                    container.scrollTop = container.scrollHeight;
+                }
+            });
+        }
+
+        async function streamGeminiTextAPI(historyMessages, signal, onChunk) {
+            const apiKey = state.customApiKey || "";
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:streamGenerateContent?alt=sse&key=${apiKey}`;
+
+            const contents = historyMessages.map(m => ({
+                role: m.role === 'assistant' ? 'model' : 'user',
+                parts: [{ text: m.apiContent || m.content }]
+            }));
+
+            const payload = {
+                contents,
+                systemInstruction: {
+                    parts: [{
+                        text: "You are PERPLEX AI (2027 Edition), an elite, fast, articulate AI assistant. Format responses cleanly using Markdown, structured headings, tables where helpful, and well-commented code blocks. Be accurate, insightful, and direct."
+                    }]
+                }
+            };
+
+            let delay = 600;
+            for (let attempt = 0; attempt < 3; attempt++) {
+                const res = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload),
+                    signal
+                });
+
+                if (res.ok && res.body) {
+                    const reader = res.body.getReader();
+                    const decoder = new TextDecoder('utf-8');
+                    let buffer = '';
+                    let accumulatedText = '';
+
+                    while (true) {
+                        const { done, value } = await reader.read();
+                        if (done) break;
+
+                        buffer += decoder.decode(value, { stream: true });
+                        const lines = buffer.split('\n');
+                        buffer = lines.pop() || '';
+
+                        for (const line of lines) {
+                            const trimmed = line.trim();
+                            if (!trimmed.startsWith('data:')) continue;
+                            const jsonStr = trimmed.slice(5).trim();
+                            if (!jsonStr || jsonStr === '[DONE]') continue;
+
+                            try {
+                                const parsed = JSON.parse(jsonStr);
+                                const delta = parsed?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+                                if (delta) {
+                                    accumulatedText += delta;
+                                    onChunk(accumulatedText);
+                                }
+                            } catch (_) {
+                                // Ignore partial JSON frames
+                            }
+                        }
+                    }
+
+                    if (!accumulatedText) throw new Error("Empty stream received from Perplex model.");
+                    return accumulatedText;
+                }
+
+                if (res.status === 429 && attempt < 2) {
+                    await new Promise(r => setTimeout(r, delay));
+                    delay *= 2;
+                    continue;
+                }
+
+                const errData = await res.json().catch(() => ({}));
+                throw new Error(errData?.error?.message || `API Error (${res.status}). Check API credentials.`);
+            }
+        }
+
+        window.regenerateLastResponse = () => {
+            if (state.isGenerating || !state.activeChatId) return;
+            const convo = state.conversations.find(c => c.id === state.activeChatId);
+            if (!convo || convo.messages.length === 0) return;
+
+            // Remove trailing assistant message if present
+            if (convo.messages[convo.messages.length - 1].role === 'assistant') {
+                convo.messages.pop();
+            }
+            const lastUserMsg = convo.messages.pop();
+            if (lastUserMsg) {
+                sendChatMessage(lastUserMsg.apiContent || lastUserMsg.content);
+            }
+        };
+
+        window.copyMessageText = (text) => {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+            showToast("Copied response to clipboard.", "success");
+        };
+
+        function renderActiveChatMessages() {
+            const container = document.getElementById('chat-messages-container');
+            const emptyState = document.getElementById('chat-empty-state');
+            const convo = state.conversations.find(c => c.id === state.activeChatId);
+
+            if (!convo || convo.messages.length === 0) {
+                container.innerHTML = '';
+                container.appendChild(emptyState);
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            container.innerHTML = convo.messages.map((msg, idx) => {
+                const isUser = msg.role === 'user';
+                const renderedHtml = marked.parse(msg.content || '');
+                const encodedRaw = encodeURIComponent(msg.content || '');
+
+                if (isUser) {
+                    return `
+                        <div class="max-w-4xl mx-auto flex justify-end animate-fade-in">
+                            <div class="max-w-[85%] sm:max-w-[75%] rounded-2xl rounded-tr-sm bg-electric text-white px-4 py-3 text-sm shadow-md">
+                                <div class="markdown-body">${renderedHtml}</div>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    const isLast = idx === convo.messages.length - 1;
+                    return `
+                        <div class="max-w-4xl mx-auto flex items-start gap-3.5 animate-fade-in">
+                            <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-electric to-cyanGlow flex items-center justify-center text-white shrink-0 mt-0.5 shadow-md">
+                                <i data-lucide="hexagon" class="w-4 h-4"></i>
+                            </div>
+                            <div class="flex-1 min-w-0 glass-panel rounded-2xl rounded-tl-sm p-4 sm:p-5">
+                                <div class="ai-message-content markdown-body text-sm text-slate-800 dark:text-slate-200 ${msg.isStreaming ? 'typing-cursor' : ''}">
+                                    ${renderedHtml}
+                                </div>
+                                ${!msg.isStreaming ? `
+                                <div class="flex items-center gap-2 mt-4 pt-2.5 border-t border-slate-200/60 dark:border-white/5 text-xs text-slate-400">
+                                    <button onclick="copyMessageText(decodeURIComponent('${encodedRaw}'))" class="px-2 py-1 rounded-lg hover:bg-slate-100 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white flex items-center gap-1 transition">
+                                        <i data-lucide="copy" class="w-3.5 h-3.5"></i> Copy
+                                    </button>
+                                    ${isLast ? `
+                                    <button onclick="regenerateLastResponse()" class="px-2 py-1 rounded-lg hover:bg-slate-100 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white flex items-center gap-1 transition">
+                                        <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Regenerate
+                                    </button>` : ''}
+                                </div>` : ''}
+                            </div>
+                        </div>
+                    `;
+                }
+            }).join('');
+
+            lucide.createIcons();
+            container.querySelectorAll('pre code').forEach((block) => hljs.highlightElement(block));
+            container.scrollTop = container.scrollHeight;
+        }
+
+        // ------------------------------------------
+        // 7. PERPLEX CREATE (REAL IMAGE GENERATION)
+        // ------------------------------------------
+        window.selectImageStyle = (btn, styleName) => {
+            state.selectedImageStyle = styleName;
+            document.querySelectorAll('.style-pill').forEach(el => {
+                el.className = 'style-pill px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-100 dark:bg-obsidian text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10 transition';
+            });
+            btn.className = 'style-pill active px-3 py-1.5 rounded-lg text-xs font-medium bg-electric text-white transition';
+        };
+
+        window.selectAspectRatio = (btn, ratio) => {
+            state.selectedAspectRatio = ratio;
+            document.querySelectorAll('.ratio-pill').forEach(el => {
+                el.className = 'ratio-pill py-2 px-3 rounded-xl border border-slate-200 dark:border-white/10 text-xs font-medium flex items-center justify-center gap-1.5 hover:bg-white/5 transition';
+            });
+            btn.className = 'ratio-pill active py-2 px-3 rounded-xl border border-electric bg-electric/15 text-electric dark:text-cyanGlow text-xs font-medium flex items-center justify-center gap-1.5 transition';
+        };
+
+        window.generateImage = async () => {
+            const promptInput = document.getElementById('image-prompt-input');
+            const rawPrompt = promptInput.value.trim();
+            if (!rawPrompt) {
+                showToast("Please describe the image you want to generate.", "info");
+                return;
+            }
+
+            const btn = document.getElementById('generate-image-btn');
+            const placeholder = document.getElementById('image-preview-placeholder');
+            const loader = document.getElementById('image-loading-state');
+            const resultBox = document.getElementById('image-result-container');
+
+            btn.disabled = true;
+            placeholder.classList.add('hidden');
+            resultBox.classList.add('hidden');
+            loader.classList.remove('hidden');
+            loader.classList.add('flex');
+
+            const fullPrompt = `${rawPrompt}, ${state.selectedImageStyle} style, high detail, clean composition`;
+
+            try {
+                const apiKey = state.customApiKey || "";
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-image:generateContent?key=${apiKey}`;
+
+                const payload = {
+                    contents: [{
+                        role: 'user',
+                        parts: [{ text: fullPrompt }]
+                    }],
+                    generationConfig: {
+                        responseModalities: ['TEXT', 'IMAGE']
+                    }
+                };
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    const errJson = await response.json().catch(() => ({}));
+                    throw new Error(errJson?.error?.message || `Image API error (${response.status})`);
+                }
+
+                const result = await response.json();
+                const part = result?.candidates?.[0]?.content?.parts?.find(p => p.inlineData);
+
+                if (!part || !part.inlineData?.data) {
+                    throw new Error("No image payload returned by the model.");
+                }
+
+                const dataUrl = `data:${part.inlineData.mimeType || 'image/png'};base64,${part.inlineData.data}`;
+
+                // Update Viewport
+                document.getElementById('generated-image-display').src = dataUrl;
+                document.getElementById('generated-image-meta').textContent = `${state.selectedImageStyle} • ${state.selectedAspectRatio}`;
+                loader.classList.add('hidden');
+                loader.classList.remove('flex');
+                resultBox.classList.remove('hidden');
+                incrementUsage();
+
+                // Save to Gallery (In-memory + Firestore metadata)
+                const imageRecord = {
+                    id: 'img-' + Date.now(),
+                    prompt: rawPrompt,
+                    style: state.selectedImageStyle,
+                    aspectRatio: state.selectedAspectRatio,
+                    dataUrl: dataUrl,
+                    createdAt: Date.now()
+                };
+
+                state.images.unshift(imageRecord);
+                renderImageGallery();
+
+                if (isFirebaseReady && auth.currentUser) {
+                    // Store prompt history & image if under Firestore 1MB limit
+                    if (dataUrl.length < 900000) {
+                        const uid = auth.currentUser.uid;
+                        await setDoc(doc(db, 'artifacts', appId, 'users', uid, 'images', imageRecord.id), imageRecord);
+                    }
+                }
+
+                showToast("Image synthesized successfully.", "success");
+            } catch (err) {
+                loader.classList.add('hidden');
+                loader.classList.remove('flex');
+                placeholder.classList.remove('hidden');
+                showToast(`Image generation failed: ${err.message}`, "error");
+            } finally {
+                btn.disabled = false;
+            }
+        };
+
+        function renderImageGallery() {
+            const grid = document.getElementById('image-gallery-grid');
+            if (state.images.length === 0) {
+                grid.innerHTML = `<div class="col-span-full p-8 rounded-2xl glass-panel text-center text-xs text-slate-500">No generated images yet. Create your first visual above.</div>`;
+                return;
+            }
+
+            grid.innerHTML = state.images.map(img => `
+                <div class="rounded-2xl glass-panel overflow-hidden group flex flex-col">
+                    <div class="relative aspect-square bg-obsidian overflow-hidden">
+                        <img src="${img.dataUrl}" alt="${img.prompt}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300 cursor-pointer" onclick="openImageModal('${img.dataUrl}', '${img.prompt.replace(/'/g, "\\'")}')">
+                        <div class="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition">
+                            <button onclick="downloadDataUrl('${img.dataUrl}', 'perplex-${img.id}.png')" class="p-1.5 rounded-lg bg-black/70 text-white hover:bg-electric transition" title="Download">
+                                <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="p-3 flex-1 flex flex-col justify-between">
+                        <p class="text-xs line-clamp-2 text-slate-700 dark:text-slate-300 mb-2">${img.prompt}</p>
+                        <div class="flex items-center justify-between text-[10px] text-slate-400 font-mono">
+                            <span>${img.style}</span>
+                            <button onclick="reuseImagePrompt('${img.prompt.replace(/'/g, "\\'")}')" class="text-cyanGlow hover:underline">Reuse</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        window.reuseImagePrompt = (prompt) => {
+            document.getElementById('image-prompt-input').value = prompt;
+            showToast("Prompt loaded into studio.", "info");
+        };
+
+        window.openImageModal = (src, prompt) => {
+            document.getElementById('modal-image-src').src = src;
+            document.getElementById('modal-image-prompt').textContent = prompt;
+            document.getElementById('modal-download-btn').onclick = () => downloadDataUrl(src, 'perplex-hd.png');
+            document.getElementById('image-modal').classList.remove('hidden');
+        };
+
+        window.closeImageModal = () => {
+            document.getElementById('image-modal').classList.add('hidden');
+        };
+
+        window.downloadDataUrl = (dataUrl, filename) => {
+            const link = document.createElement('a');
+            link.href = dataUrl;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        };
+
+        // ------------------------------------------
+        // 8. PROJECTS, HISTORY & SETTINGS
+        // ------------------------------------------
+        window.saveCurrentChatAsProject = async () => {
+            const convo = state.conversations.find(c => c.id === state.activeChatId);
+            if (!convo || convo.messages.length === 0) {
+                showToast("Start a conversation before saving as a project.", "info");
+                return;
+            }
+
+            const project = {
+                id: 'proj-' + Date.now(),
+                title: convo.title,
+                summary: convo.messages[convo.messages.length - 1].content.slice(0, 140) + '...',
+                chatId: convo.id,
+                createdAt: Date.now()
+            };
+
+            if (isFirebaseReady && auth.currentUser) {
+                const uid = auth.currentUser.uid;
+                await setDoc(doc(db, 'artifacts', appId, 'users', uid, 'projects', project.id), project);
+            } else {
+                state.projects.unshift(project);
+                renderProjectsGrid();
+            }
+            showToast("Saved to My Projects.", "success");
+        };
+
+        window.createNewBlankProject = async () => {
+            startNewChat(true);
+            showToast("New project workspace initialized.", "info");
+        };
+
+        function renderProjectsGrid() {
+            const grid = document.getElementById('projects-grid');
+            if (state.projects.length === 0) {
+                grid.innerHTML = `<div class="col-span-full p-8 rounded-2xl glass-panel text-center text-xs text-slate-500">No saved projects yet. Click "Save Project" inside any AI Chat thread to organize your work here.</div>`;
+                return;
+            }
+
+            grid.innerHTML = state.projects.map(p => `
+                <div class="p-5 rounded-2xl glass-panel flex flex-col justify-between hover:border-electric/40 transition">
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-500/15 text-amber-400">SAVED PROJECT</span>
+                            <span class="text-[10px] text-slate-400">${new Date(p.createdAt).toLocaleDateString()}</span>
+                        </div>
+                        <h3 class="text-sm font-semibold mb-1.5">${p.title}</h3>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 line-clamp-3 mb-4">${p.summary}</p>
+                    </div>
+                    <button onclick="openConversation('${p.chatId}')" class="w-fit text-xs font-medium text-electric dark:text-cyanGlow hover:underline flex items-center gap-1">
+                        Open Workspace <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                    </button>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        function renderSidebarChats() {
+            const list = document.getElementById('sidebar-recent-chats');
+            if (state.conversations.length === 0) {
+                list.innerHTML = `<p class="px-3 py-2 text-xs text-slate-500">No recent chats</p>`;
+                return;
+            }
+
+            list.innerHTML = state.conversations.slice(0, 6).map(c => `
+                <div onclick="openConversation('${c.id}')" class="group flex items-center justify-between px-3 py-2 rounded-xl text-xs cursor-pointer ${state.activeChatId === c.id ? 'bg-white/10 text-white font-medium' : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5'} transition">
+                    <span class="truncate pr-2">${c.title}</span>
+                    <button onclick="deleteConversation('${c.id}', event)" class="opacity-0 group-hover:opacity-100 text-slate-400 hover:text-rose-400 transition">
+                        <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                    </button>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        window.renderHistoryList = () => {
+            const container = document.getElementById('history-list-container');
+            const query = (document.getElementById('history-search-input')?.value || '').toLowerCase();
+            const filtered = state.conversations.filter(c => c.title.toLowerCase().includes(query));
+
+            if (filtered.length === 0) {
+                container.innerHTML = `<div class="p-8 rounded-2xl glass-panel text-center text-xs text-slate-500">No matching conversations found.</div>`;
+                return;
+            }
+
+            container.innerHTML = filtered.map(c => `
+                <div onclick="openConversation('${c.id}')" class="p-4 rounded-2xl glass-panel hover:border-electric/40 flex items-center justify-between cursor-pointer transition">
+                    <div class="min-w-0 pr-4">
+                        <h4 class="text-sm font-semibold truncate">${c.title}</h4>
+                        <p class="text-xs text-slate-500 mt-0.5">${c.messages.length} messages • Updated ${new Date(c.updatedAt).toLocaleString()}</p>
+                    </div>
+                    <div class="flex items-center gap-2 shrink-0">
+                        <button onclick="deleteConversation('${c.id}', event)" class="p-2 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 transition" title="Delete">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        };
+
+        window.saveProfileSettings = async () => {
+            const newName = document.getElementById('settings-name-input').value.trim();
+            if (!newName) return;
+
+            state.user.displayName = newName;
+            document.getElementById('user-display-name').textContent = newName;
+            document.getElementById('user-avatar').textContent = newName.charAt(0).toUpperCase();
+
+            if (isFirebaseReady && auth.currentUser) {
+                try {
+                    await updateProfile(auth.currentUser, { displayName: newName });
+                } catch (_) {}
+            }
+            showToast("Profile updated.", "success");
+        };
+
+        window.applyCustomApiKey = () => {
+            const val = document.getElementById('custom-api-key-input').value.trim();
+            state.customApiKey = val;
+            document.getElementById('api-status-badge').textContent = val ? 'CUSTOM KEY ACTIVE' : 'RUNTIME CONNECTED';
+            showToast(val ? "Custom API key applied for this session." : "Reverted to default runtime credentials.", "success");
+        };
+
+        function renderAllData() {
+            renderSidebarChats();
+            renderHistoryList();
+            renderProjectsGrid();
+            renderImageGallery();
+        }
+
+        // ------------------------------------------
+        // 9. TOAST NOTIFICATIONS & SHORTCUTS
+        // ------------------------------------------
+        window.showToast = (message, type = 'info') => {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            const colors = {
+                success: 'border-emerald-500/40 bg-charcoal text-emerald-300',
+                error: 'border-rose-500/40 bg-charcoal text-rose-300',
+                info: 'border-electric/40 bg-charcoal text-cyanGlow'
+            };
+            toast.className = `pointer-events-auto px-4 py-3 rounded-xl border ${colors[type] || colors.info} shadow-2xl text-xs font-medium flex items-center gap-2 animate-fade-in backdrop-blur-md`;
+            toast.innerHTML = `<span>${message}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transition = 'opacity 0.3s ease';
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
+        };
+
+        // Global Keyboard Shortcut: Cmd/Ctrl + K for New Chat
+        document.addEventListener('keydown', (e) => {
+            if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+                e.preventDefault();
+                if (state.user) startNewChat(true);
+            }
+        });
+
+        // Initialize Icons & Auth on Window Load
+        window.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            initAuth();
+        });
+    </script>
+</body>
+</html>

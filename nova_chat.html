@@ -1,0 +1,1275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NOVA CHAT - Your AI. Your World.</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Marked.js for Markdown parsing -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    
+    <!-- DOMPurify for security against XSS in Markdown -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.3/purify.min.js"></script>
+
+    <!-- Highlight.js for code formatting -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            dark: '#0f0c29',
+                            darker: '#050314',
+                            purple: '#8b5cf6',
+                            blue: '#3b82f6',
+                            surface: '#1e1b4b',
+                            surfaceHover: '#312e81'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: theme('colors.brand.darker');
+            color: white;
+            overflow: hidden; /* Prevent body scroll, handle in containers */
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: theme('colors.brand.surfaceHover');
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: theme('colors.brand.purple');
+        }
+
+        /* Gradient Text */
+        .text-gradient {
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-image: linear-gradient(to right, theme('colors.brand.purple'), theme('colors.brand.blue'));
+        }
+
+        /* Markdown Styles */
+        .markdown-body p { margin-bottom: 1rem; }
+        .markdown-body h1, .markdown-body h2, .markdown-body h3, .markdown-body h4 { 
+            margin-top: 1.5rem; margin-bottom: 0.75rem; font-weight: 600; color: #e2e8f0;
+        }
+        .markdown-body h1 { font-size: 1.5rem; }
+        .markdown-body h2 { font-size: 1.25rem; }
+        .markdown-body ul { list-style-type: disc; padding-left: 1.5rem; margin-bottom: 1rem; }
+        .markdown-body ol { list-style-type: decimal; padding-left: 1.5rem; margin-bottom: 1rem; }
+        .markdown-body code:not(pre code) { 
+            background-color: theme('colors.brand.surface');
+            padding: 0.2rem 0.4rem;
+            border-radius: 0.25rem;
+            font-family: monospace;
+            font-size: 0.9em;
+            color: theme('colors.brand.purple');
+        }
+        .markdown-body pre {
+            background-color: #1e1e1e !important;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            overflow-x: auto;
+            margin-bottom: 1rem;
+            border: 1px solid theme('colors.brand.surfaceHover');
+        }
+        .markdown-body a { color: theme('colors.brand.blue'); text-decoration: underline; }
+        .markdown-body blockquote {
+            border-left: 4px solid theme('colors.brand.purple');
+            padding-left: 1rem;
+            color: #94a3b8;
+            margin-bottom: 1rem;
+            font-style: italic;
+        }
+
+        /* Loading Dots */
+        .typing-indicator span {
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            background-color: theme('colors.brand.purple');
+            border-radius: 50%;
+            animation: typing 1.4s infinite ease-in-out both;
+            margin: 0 2px;
+        }
+        .typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
+        .typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes typing {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+
+        .glass-panel {
+            background: rgba(30, 27, 75, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+    </style>
+</head>
+<body class="h-screen flex flex-col md:flex-row antialiased selection:bg-brand-purple selection:text-white">
+
+    <!-- Modal Overlay (for alerts/confirms/settings) -->
+    <div id="modalOverlay" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div id="modalContent" class="glass-panel border border-brand-surfaceHover rounded-2xl w-full max-w-md p-6 transform transition-all shadow-2xl shadow-brand-purple/20">
+            <h3 id="modalTitle" class="text-xl font-bold mb-2 text-white">Title</h3>
+            <p id="modalBody" class="text-gray-300 mb-6">Message goes here...</p>
+            <div id="modalActions" class="flex justify-end gap-3">
+                <!-- Buttons injected via JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Header -->
+    <div class="md:hidden flex items-center justify-between p-4 glass-panel border-b border-brand-surfaceHover z-40">
+        <div class="flex items-center gap-2">
+            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-brand-purple to-brand-blue flex items-center justify-center shadow-lg shadow-brand-purple/30">
+                <i class="fa-solid fa-sparkles text-white text-xs"></i>
+            </div>
+            <h1 class="font-bold text-lg tracking-wide">NOVA CHAT</h1>
+        </div>
+        <button id="mobileMenuBtn" class="p-2 text-gray-300 hover:text-white rounded-lg hover:bg-brand-surface transition-colors">
+            <i class="fa-solid fa-bars text-xl"></i>
+        </button>
+    </div>
+
+    <!-- Sidebar -->
+    <aside id="sidebar" class="fixed inset-y-0 left-0 z-40 w-72 glass-panel border-r border-brand-surfaceHover transform -translate-x-full md:translate-x-0 md:relative md:flex flex-col transition-transform duration-300 ease-in-out">
+        
+        <!-- Sidebar Header -->
+        <div class="p-4 border-b border-brand-surfaceHover hidden md:flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-purple to-brand-blue flex items-center justify-center shadow-lg shadow-brand-purple/30">
+                <i class="fa-solid fa-sparkles text-white"></i>
+            </div>
+            <div>
+                <h1 class="font-bold text-lg tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-400">NOVA CHAT</h1>
+                <p class="text-[10px] text-gray-400 uppercase tracking-widest font-semibold">Your AI. Your World.</p>
+            </div>
+        </div>
+
+        <div class="p-4">
+            <button id="newChatBtn" class="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-brand-purple to-brand-blue hover:opacity-90 text-white font-medium flex items-center justify-center gap-2 transition-all shadow-lg shadow-brand-purple/20 hover:shadow-brand-purple/40 active:scale-95">
+                <i class="fa-solid fa-plus"></i> New Chat
+            </button>
+        </div>
+
+        <!-- Chat List -->
+        <div class="flex-1 overflow-y-auto px-3 py-2 space-y-1" id="chatList">
+            <!-- Chat Items Injected Here -->
+            <div class="text-center text-gray-500 text-sm mt-10">Loading chats...</div>
+        </div>
+
+        <!-- Sidebar Footer (Settings / User) -->
+        <div class="p-4 border-t border-brand-surfaceHover">
+            <div class="flex flex-col gap-2">
+                <button id="settingsBtn" class="flex items-center gap-3 p-3 rounded-xl hover:bg-brand-surface transition-colors text-sm text-gray-300 hover:text-white w-full text-left">
+                    <i class="fa-solid fa-sliders text-brand-blue"></i>
+                    <span>AI Settings</span>
+                </button>
+                <div class="flex items-center gap-3 p-3 rounded-xl bg-brand-surface/50 border border-brand-surfaceHover text-sm">
+                    <div class="w-8 h-8 rounded-full bg-brand-surfaceHover flex items-center justify-center">
+                        <i class="fa-solid fa-user text-gray-400"></i>
+                    </div>
+                    <div class="flex-1 overflow-hidden">
+                        <p class="truncate font-medium text-gray-200" id="userDisplay">Connecting...</p>
+                        <p class="text-xs text-gray-500">Secured via Firebase</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Chat Area -->
+    <main class="flex-1 flex flex-col relative h-[calc(100vh-65px)] md:h-screen">
+        
+        <!-- Top Options Bar -->
+        <div class="h-14 glass-panel border-b border-brand-surfaceHover flex items-center justify-between px-4 sm:px-6 z-10">
+            <div class="flex items-center gap-2 overflow-x-auto no-scrollbar">
+                <span id="currentChatTitle" class="font-medium text-gray-200 truncate max-w-[200px] sm:max-w-xs">New Conversation</span>
+            </div>
+            <div class="flex items-center gap-2 sm:gap-4 shrink-0">
+                <div class="hidden sm:flex items-center gap-2 text-xs bg-brand-surface px-3 py-1.5 rounded-full border border-brand-surfaceHover">
+                    <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                    <span class="text-gray-300">Gemini 3.1 Pro</span>
+                </div>
+                <button id="toggleSearchBtn" class="text-gray-400 hover:text-brand-blue p-2 rounded-lg transition-colors group relative" title="Toggle Web Search">
+                    <i class="fa-solid fa-globe"></i>
+                    <span class="absolute -bottom-8 left-1/2 -translate-x-1/2 bg-black text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">Web Search (Off)</span>
+                </button>
+                <button id="toggleVoiceBtn" class="text-gray-400 hover:text-brand-purple p-2 rounded-lg transition-colors group relative" title="Voice Output">
+                    <i class="fa-solid fa-volume-high"></i>
+                    <span class="absolute -bottom-8 left-1/2 -translate-x-1/2 bg-black text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">Voice Mode (Off)</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Messages Container -->
+        <div id="messagesContainer" class="flex-1 overflow-y-auto p-4 sm:p-6 pb-32 sm:pb-32 space-y-6 scroll-smooth">
+            
+            <!-- Welcome Screen (Visible on new chat) -->
+            <div id="welcomeScreen" class="h-full flex flex-col items-center justify-center text-center max-w-2xl mx-auto space-y-6 py-10">
+                <div class="w-24 h-24 rounded-3xl bg-gradient-to-br from-brand-purple to-brand-blue flex items-center justify-center shadow-[0_0_40px_rgba(139,92,246,0.3)] mb-4">
+                    <i class="fa-solid fa-sparkles text-4xl text-white"></i>
+                </div>
+                <h2 class="text-3xl sm:text-4xl font-bold">Welcome to <span class="text-gradient">NOVA</span></h2>
+                <p class="text-gray-400 text-sm sm:text-base leading-relaxed">
+                    Experience next-generation AI powered by Google Gemini. Ask questions, generate images, analyze files, or search the web in real-time.
+                </p>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full mt-8">
+                    <button class="suggestion-btn p-4 rounded-xl bg-brand-surface/50 border border-brand-surfaceHover hover:border-brand-purple text-left transition-all hover:-translate-y-1 group">
+                        <i class="fa-solid fa-image text-brand-purple mb-2 text-xl group-hover:scale-110 transition-transform"></i>
+                        <h4 class="font-medium text-sm text-gray-200">Generate an image</h4>
+                        <p class="text-xs text-gray-500 mt-1">"Create a futuristic cyberpunk city skyline at night"</p>
+                    </button>
+                    <button class="suggestion-btn p-4 rounded-xl bg-brand-surface/50 border border-brand-surfaceHover hover:border-brand-blue text-left transition-all hover:-translate-y-1 group">
+                        <i class="fa-solid fa-globe text-brand-blue mb-2 text-xl group-hover:scale-110 transition-transform"></i>
+                        <h4 class="font-medium text-sm text-gray-200">Research the web</h4>
+                        <p class="text-xs text-gray-500 mt-1">"What are the latest breakthroughs in quantum computing?"</p>
+                    </button>
+                    <button class="suggestion-btn p-4 rounded-xl bg-brand-surface/50 border border-brand-surfaceHover hover:border-green-500 text-left transition-all hover:-translate-y-1 group hidden sm:block">
+                        <i class="fa-solid fa-code text-green-500 mb-2 text-xl group-hover:scale-110 transition-transform"></i>
+                        <h4 class="font-medium text-sm text-gray-200">Write some code</h4>
+                        <p class="text-xs text-gray-500 mt-1">"Write a Python script to scrape a website"</p>
+                    </button>
+                    <button class="suggestion-btn p-4 rounded-xl bg-brand-surface/50 border border-brand-surfaceHover hover:border-orange-500 text-left transition-all hover:-translate-y-1 group hidden sm:block">
+                        <i class="fa-solid fa-calculator text-orange-500 mb-2 text-xl group-hover:scale-110 transition-transform"></i>
+                        <h4 class="font-medium text-sm text-gray-200">Solve complex math</h4>
+                        <p class="text-xs text-gray-500 mt-1">"Explain the Navier-Stokes equations simply"</p>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Dynamic messages will be appended here -->
+        </div>
+
+        <!-- Input Area (Fixed at bottom of main) -->
+        <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-brand-darker via-brand-darker to-transparent pointer-events-none">
+            <div class="max-w-4xl mx-auto pointer-events-auto">
+                
+                <!-- Image Attachment Preview -->
+                <div id="attachmentPreview" class="hidden mb-2 flex gap-2 overflow-x-auto p-2 bg-brand-surface/80 backdrop-blur rounded-lg border border-brand-surfaceHover">
+                    <!-- Image previews injected here -->
+                </div>
+
+                <div class="relative glass-panel rounded-2xl border border-brand-surfaceHover shadow-2xl shadow-black/50 focus-within:border-brand-purple transition-colors p-2 flex flex-col">
+                    
+                    <textarea id="chatInput" rows="1" class="w-full bg-transparent border-none outline-none resize-none max-h-32 text-white placeholder-gray-500 py-2 px-3 scrollbar-hide text-sm sm:text-base" placeholder="Message NOVA... (Type /image to generate)"></textarea>
+                    
+                    <div class="flex items-center justify-between mt-2 pt-2 border-t border-brand-surfaceHover/50">
+                        <div class="flex items-center gap-1 sm:gap-2">
+                            <label for="imageUpload" class="p-2 text-gray-400 hover:text-brand-purple hover:bg-brand-surface rounded-lg cursor-pointer transition-colors" title="Attach Image/Document">
+                                <i class="fa-solid fa-paperclip"></i>
+                            </label>
+                            <input type="file" id="imageUpload" accept="image/*,.txt" class="hidden" multiple>
+                            
+                            <button id="micBtn" class="p-2 text-gray-400 hover:text-brand-blue hover:bg-brand-surface rounded-lg transition-colors" title="Speak">
+                                <i class="fa-solid fa-microphone"></i>
+                            </button>
+                        </div>
+                        
+                        <button id="sendBtn" class="bg-brand-purple hover:bg-brand-blue text-white rounded-lg px-4 py-2 font-medium transition-all shadow-lg active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2">
+                            <span class="hidden sm:inline">Send</span>
+                            <i class="fa-solid fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="text-center mt-2">
+                    <p class="text-[10px] text-gray-500">NOVA CHAT powered by Gemini API. Responses may not always be accurate.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="glass-panel border border-brand-surfaceHover rounded-2xl w-full max-w-lg p-6 transform transition-all shadow-2xl">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold text-white"><i class="fa-solid fa-sliders text-brand-purple mr-2"></i> AI Settings</h3>
+                <button id="closeSettingsBtn" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            
+            <div class="space-y-5">
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-1">Gemini API Key</label>
+                    <input type="password" id="apiKeyInput" class="w-full bg-brand-surface border border-brand-surfaceHover rounded-lg p-3 text-white focus:border-brand-purple outline-none transition-colors text-sm" placeholder="Paste your API key for external hosting...">
+                    <p class="text-[10px] text-gray-500 mt-1">Required if you are hosting this app on Netlify or GitHub Pages.</p>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-1">System Instruction (Persona)</label>
+                    <textarea id="systemPromptInput" rows="3" class="w-full bg-brand-surface border border-brand-surfaceHover rounded-lg p-3 text-white focus:border-brand-purple outline-none transition-colors text-sm" placeholder="e.g. You are a helpful expert coder..."></textarea>
+                    <p class="text-xs text-gray-500 mt-1">Define how NOVA should behave.</p>
+                </div>
+
+                <div class="flex items-center justify-between p-3 bg-brand-surface/50 rounded-lg border border-brand-surfaceHover">
+                    <div>
+                        <h4 class="text-sm font-medium text-gray-200">Creative Temperature</h4>
+                        <p class="text-xs text-gray-500">Higher values produce more creative results.</p>
+                    </div>
+                    <input type="range" id="tempSlider" min="0" max="1" step="0.1" value="0.7" class="accent-brand-purple">
+                </div>
+            </div>
+
+            <div class="mt-6 flex justify-end">
+                <button id="saveSettingsBtn" class="bg-gradient-to-r from-brand-purple to-brand-blue text-white px-5 py-2 rounded-lg font-medium hover:shadow-lg hover:shadow-brand-purple/20 transition-all">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase Imports via Module -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, collection, getDocs, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Global Gemini API Key (Using empty string for Canvas runtime injection, or local storage for Netlify)
+        let GEMINI_API_KEY = localStorage.getItem('nova_gemini_key') || "";
+        
+        // --- State Management ---
+        let currentUserId = null;
+        let db = null;
+        let auth = null;
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'nova-chat-default';
+        
+        let chats = []; // Array of {id, title, timestamp}
+        let currentChatId = null;
+        let currentMessages = []; // Array of message objects formatted for Gemini API
+        let attachedFiles = []; // Array of {mimeType, data (base64)}
+        
+        // Settings State
+        let appSettings = {
+            systemInstruction: "You are NOVA CHAT, a highly advanced, professional, and helpful AI assistant powered by Google Gemini. Use markdown formatting for readability. Provide concise but comprehensive answers.",
+            temperature: 0.7,
+            webSearchEnabled: false,
+            voiceOutputEnabled: false
+        };
+
+        // --- DOM Elements ---
+        const els = {
+            sidebar: document.getElementById('sidebar'),
+            mobileMenuBtn: document.getElementById('mobileMenuBtn'),
+            chatList: document.getElementById('chatList'),
+            newChatBtn: document.getElementById('newChatBtn'),
+            currentChatTitle: document.getElementById('currentChatTitle'),
+            messagesContainer: document.getElementById('messagesContainer'),
+            welcomeScreen: document.getElementById('welcomeScreen'),
+            chatInput: document.getElementById('chatInput'),
+            sendBtn: document.getElementById('sendBtn'),
+            imageUpload: document.getElementById('imageUpload'),
+            attachmentPreview: document.getElementById('attachmentPreview'),
+            micBtn: document.getElementById('micBtn'),
+            toggleSearchBtn: document.getElementById('toggleSearchBtn'),
+            toggleVoiceBtn: document.getElementById('toggleVoiceBtn'),
+            userDisplay: document.getElementById('userDisplay'),
+            
+            // Modals
+            modalOverlay: document.getElementById('modalOverlay'),
+            modalTitle: document.getElementById('modalTitle'),
+            modalBody: document.getElementById('modalBody'),
+            modalActions: document.getElementById('modalActions'),
+            
+            settingsBtn: document.getElementById('settingsBtn'),
+            settingsModal: document.getElementById('settingsModal'),
+            closeSettingsBtn: document.getElementById('closeSettingsBtn'),
+            saveSettingsBtn: document.getElementById('saveSettingsBtn'),
+            apiKeyInput: document.getElementById('apiKeyInput'),
+            systemPromptInput: document.getElementById('systemPromptInput'),
+            tempSlider: document.getElementById('tempSlider'),
+        };
+
+        // --- UI Utilities ---
+
+        function customAlert(title, message) {
+            return new Promise((resolve) => {
+                els.modalTitle.textContent = title;
+                els.modalBody.textContent = message;
+                els.modalActions.innerHTML = `<button class="bg-brand-purple hover:bg-brand-blue text-white px-4 py-2 rounded-lg transition-colors" id="modalOkBtn">OK</button>`;
+                els.modalOverlay.classList.remove('hidden');
+                
+                document.getElementById('modalOkBtn').addEventListener('click', () => {
+                    els.modalOverlay.classList.add('hidden');
+                    resolve(true);
+                }, {once: true});
+            });
+        }
+
+        function customConfirm(title, message) {
+            return new Promise((resolve) => {
+                els.modalTitle.textContent = title;
+                els.modalBody.textContent = message;
+                els.modalActions.innerHTML = `
+                    <button class="bg-transparent border border-gray-600 text-gray-300 hover:bg-gray-800 px-4 py-2 rounded-lg transition-colors" id="modalCancelBtn">Cancel</button>
+                    <button class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors" id="modalConfirmBtn">Confirm</button>
+                `;
+                els.modalOverlay.classList.remove('hidden');
+                
+                document.getElementById('modalCancelBtn').addEventListener('click', () => {
+                    els.modalOverlay.classList.add('hidden');
+                    resolve(false);
+                }, {once: true});
+                
+                document.getElementById('modalConfirmBtn').addEventListener('click', () => {
+                    els.modalOverlay.classList.add('hidden');
+                    resolve(true);
+                }, {once: true});
+            });
+        }
+
+        // Auto-resize textarea
+        els.chatInput.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = (this.scrollHeight < 128 ? this.scrollHeight : 128) + 'px';
+        });
+
+        // Mobile Sidebar Toggle
+        els.mobileMenuBtn.addEventListener('click', () => {
+            els.sidebar.classList.toggle('-translate-x-full');
+        });
+
+        // Close sidebar on mobile when clicking outside
+        document.addEventListener('click', (e) => {
+            if (window.innerWidth < 768 && !els.sidebar.contains(e.target) && !els.mobileMenuBtn.contains(e.target)) {
+                els.sidebar.classList.add('-translate-x-full');
+            }
+        });
+
+        // Marked configuration
+        marked.setOptions({
+            highlight: function(code, lang) {
+                const language = hljs.getLanguage(lang) ? lang : 'plaintext';
+                return hljs.highlight(code, { language }).value;
+            },
+            langPrefix: 'hljs language-',
+            breaks: true
+        });
+
+        function scrollToBottom() {
+            els.messagesContainer.scrollTo({
+                top: els.messagesContainer.scrollHeight,
+                behavior: 'smooth'
+            });
+        }
+
+        // --- Firebase Initialization ---
+        async function initApp() {
+            try {
+                if (typeof __firebase_config === 'undefined') {
+                    // Fallback for local testing without Firebase env
+                    console.log("No Firebase config found. Running in memory mode.");
+                    currentUserId = "local-user";
+                    els.userDisplay.textContent = "Local Session";
+                    startNewChat();
+                    return;
+                }
+
+                const firebaseConfig = JSON.parse(__firebase_config);
+                const app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
+
+                // Auth
+                if (typeof __initial_auth_token !== 'undefined') {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+
+                onAuthStateChanged(auth, async (user) => {
+                    if (user) {
+                        currentUserId = user.uid;
+                        els.userDisplay.textContent = `User: ${currentUserId.substring(0,6)}...`;
+                        await loadChatsList();
+                    }
+                });
+
+            } catch (error) {
+                console.error("Initialization error:", error);
+                await customAlert("Error", "Failed to initialize application.");
+            }
+        }
+
+        // --- Database Functions (Firestore) ---
+        // RULE 1 Strict Paths: collection(db, 'artifacts', appId, 'users', userId, 'chats')
+        
+        function getChatsCollectionRef() {
+            if (!currentUserId || !db) return null;
+            return collection(db, 'artifacts', appId, 'users', currentUserId, 'chats');
+        }
+
+        function getChatDocRef(chatId) {
+            if (!currentUserId || !db) return null;
+            return doc(db, 'artifacts', appId, 'users', currentUserId, 'chats', chatId);
+        }
+
+        async function loadChatsList() {
+            const colRef = getChatsCollectionRef();
+            if (!colRef) return;
+
+            try {
+                // RULE 2: No complex queries. Fetch all, sort in memory.
+                const snapshot = await getDocs(colRef);
+                chats = [];
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    chats.push({
+                        id: doc.id,
+                        title: data.title || 'New Chat',
+                        timestamp: data.timestamp || 0
+                    });
+                });
+
+                // Sort descending
+                chats.sort((a, b) => b.timestamp - a.timestamp);
+                renderChatList();
+                
+                if (chats.length > 0) {
+                    await loadChat(chats[0].id);
+                } else {
+                    startNewChat();
+                }
+            } catch (e) {
+                console.error("Error loading chats:", e);
+                els.chatList.innerHTML = `<div class="text-red-400 text-xs p-2">Failed to load history.</div>`;
+            }
+        }
+
+        async function saveCurrentChat() {
+            if (!currentUserId || !db || currentMessages.length === 0) return;
+            
+            if (!currentChatId) {
+                currentChatId = crypto.randomUUID();
+                // Generate title from first user message
+                const firstUserMsg = currentMessages.find(m => m.role === 'user');
+                let title = firstUserMsg ? firstUserMsg.parts[0].text.substring(0, 30) : 'New Chat';
+                if(title.length >= 30) title += '...';
+                
+                chats.unshift({ id: currentChatId, title: title, timestamp: Date.now() });
+                renderChatList();
+                els.currentChatTitle.textContent = title;
+            }
+
+            const chatRef = getChatDocRef(currentChatId);
+            const chatData = {
+                title: chats.find(c => c.id === currentChatId)?.title || 'New Chat',
+                timestamp: Date.now(),
+                messages: JSON.stringify(currentMessages) // Serialize to avoid nested array limits
+            };
+
+            try {
+                await setDoc(chatRef, chatData);
+                // Update local timestamp
+                const chatObj = chats.find(c => c.id === currentChatId);
+                if(chatObj) chatObj.timestamp = chatData.timestamp;
+                chats.sort((a, b) => b.timestamp - a.timestamp);
+                renderChatList();
+            } catch (e) {
+                console.error("Error saving chat:", e);
+            }
+        }
+
+        async function loadChat(chatId) {
+            currentChatId = chatId;
+            const chatObj = chats.find(c => c.id === chatId);
+            els.currentChatTitle.textContent = chatObj ? chatObj.title : 'Chat';
+            
+            renderChatList(); // Update active state
+            
+            els.messagesContainer.innerHTML = '';
+            els.welcomeScreen.classList.add('hidden');
+            currentMessages = [];
+
+            const chatRef = getChatDocRef(chatId);
+            if (!chatRef) return;
+
+            try {
+                const docSnap = await getDoc(chatRef);
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    if (data.messages) {
+                        currentMessages = JSON.parse(data.messages);
+                        renderMessages();
+                    }
+                }
+            } catch (e) {
+                console.error("Error loading chat data:", e);
+                await customAlert("Error", "Could not load this conversation.");
+            }
+        }
+
+        async function deleteChat(chatId, e) {
+            e.stopPropagation();
+            if (await customConfirm("Delete Chat", "Are you sure you want to delete this conversation forever?")) {
+                const chatRef = getChatDocRef(chatId);
+                if (chatRef) {
+                    try {
+                        await deleteDoc(chatRef);
+                        chats = chats.filter(c => c.id !== chatId);
+                        if (currentChatId === chatId) {
+                            startNewChat();
+                        } else {
+                            renderChatList();
+                        }
+                    } catch (err) {
+                        console.error("Failed to delete", err);
+                    }
+                }
+            }
+        }
+
+        function startNewChat() {
+            currentChatId = null;
+            currentMessages = [];
+            els.messagesContainer.innerHTML = '';
+            els.welcomeScreen.classList.remove('hidden');
+            els.currentChatTitle.textContent = "New Conversation";
+            renderChatList();
+        }
+
+        // --- Render Functions ---
+        function renderChatList() {
+            els.chatList.innerHTML = '';
+            if (chats.length === 0) {
+                els.chatList.innerHTML = `<div class="text-center text-gray-500 text-sm mt-10">No history yet.</div>`;
+                return;
+            }
+
+            chats.forEach(chat => {
+                const isActive = chat.id === currentChatId;
+                const div = document.createElement('div');
+                div.className = `group flex items-center justify-between p-3 rounded-xl cursor-pointer transition-all ${isActive ? 'bg-brand-surface border-l-2 border-brand-purple' : 'hover:bg-brand-surfaceHover text-gray-400'}`;
+                
+                div.innerHTML = `
+                    <div class="flex items-center gap-3 overflow-hidden">
+                        <i class="fa-regular fa-message text-sm ${isActive ? 'text-brand-purple' : ''}"></i>
+                        <span class="truncate text-sm font-medium ${isActive ? 'text-white' : ''}">${chat.title}</span>
+                    </div>
+                    <button class="opacity-0 group-hover:opacity-100 text-gray-500 hover:text-red-400 transition-opacity p-1 delete-btn">
+                        <i class="fa-solid fa-trash text-xs"></i>
+                    </button>
+                `;
+                
+                div.addEventListener('click', () => loadChat(chat.id));
+                div.querySelector('.delete-btn').addEventListener('click', (e) => deleteChat(chat.id, e));
+                
+                els.chatList.appendChild(div);
+            });
+        }
+
+        function renderMessages() {
+            els.messagesContainer.innerHTML = '';
+            els.welcomeScreen.classList.add('hidden');
+            
+            currentMessages.forEach(msg => {
+                appendMessageToUI(msg);
+            });
+            scrollToBottom();
+        }
+
+        function appendMessageToUI(message) {
+            els.welcomeScreen.classList.add('hidden');
+            const wrapper = document.createElement('div');
+            wrapper.className = `flex gap-4 ${message.role === 'user' ? 'justify-end' : 'justify-start'} animate-[fadeIn_0.3s_ease-out]`;
+            
+            const isUser = message.role === 'user';
+            
+            let contentHtml = '';
+            let hasImage = false;
+            let textContent = '';
+
+            message.parts.forEach(part => {
+                if (part.text) {
+                    textContent += part.text;
+                }
+                if (part.inlineData) {
+                    hasImage = true;
+                    const imgSrc = `data:${part.inlineData.mimeType};base64,${part.inlineData.data}`;
+                    contentHtml += `<img src="${imgSrc}" class="max-w-full sm:max-w-sm rounded-lg mb-2 border border-brand-surfaceHover shadow-md">`;
+                }
+            });
+
+            if (textContent) {
+                // Parse markdown and sanitize
+                let parsed = DOMPurify.sanitize(marked.parse(textContent));
+                contentHtml += `<div class="markdown-body text-sm sm:text-base">${parsed}</div>`;
+            }
+
+            const avatarHtml = isUser 
+                ? `<div class="w-8 h-8 rounded-full bg-brand-surfaceHover flex items-center justify-center shrink-0 order-2"><i class="fa-solid fa-user text-gray-400 text-xs"></i></div>`
+                : `<div class="w-8 h-8 rounded-full bg-gradient-to-br from-brand-purple to-brand-blue flex items-center justify-center shrink-0 shadow-[0_0_10px_rgba(139,92,246,0.5)]"><i class="fa-solid fa-sparkles text-white text-xs"></i></div>`;
+
+            const bubbleClasses = isUser 
+                ? `bg-brand-surface/80 text-white rounded-2xl rounded-tr-sm border border-brand-surfaceHover px-4 py-3 max-w-[85%] order-1`
+                : `bg-transparent text-white py-3 max-w-[90%] sm:max-w-[85%] w-full overflow-hidden`;
+
+            // Action buttons for AI responses
+            let actionsHtml = '';
+            if (!isUser) {
+                actionsHtml = `
+                    <div class="flex items-center gap-2 mt-2 opacity-50 hover:opacity-100 transition-opacity">
+                        <button class="text-xs text-gray-400 hover:text-white p-1 copy-btn" title="Copy to clipboard" data-text="${encodeURIComponent(textContent)}"><i class="fa-regular fa-copy"></i></button>
+                        ${appSettings.voiceOutputEnabled ? `<button class="text-xs text-gray-400 hover:text-brand-purple p-1 tts-btn" title="Read Aloud" data-text="${encodeURIComponent(textContent.substring(0, 500))}"><i class="fa-solid fa-volume-high"></i></button>` : ''}
+                    </div>
+                `;
+            }
+
+            wrapper.innerHTML = `
+                ${avatarHtml}
+                <div class="${bubbleClasses}">
+                    ${contentHtml}
+                    ${actionsHtml}
+                </div>
+            `;
+
+            // Add event listeners to buttons
+            if (!isUser) {
+                const copyBtn = wrapper.querySelector('.copy-btn');
+                if (copyBtn) {
+                    copyBtn.addEventListener('click', function() {
+                        const txt = decodeURIComponent(this.getAttribute('data-text'));
+                        navigator.clipboard.writeText(txt).then(() => {
+                            this.innerHTML = '<i class="fa-solid fa-check text-green-500"></i>';
+                            setTimeout(() => this.innerHTML = '<i class="fa-regular fa-copy"></i>', 2000);
+                        });
+                    });
+                }
+                
+                const ttsBtn = wrapper.querySelector('.tts-btn');
+                if (ttsBtn) {
+                    ttsBtn.addEventListener('click', function() {
+                        const txt = decodeURIComponent(this.getAttribute('data-text'));
+                        generateTTS(txt, this);
+                    });
+                }
+            }
+
+            els.messagesContainer.appendChild(wrapper);
+        }
+
+        function showLoadingBubble() {
+            const wrapper = document.createElement('div');
+            wrapper.id = 'loadingBubble';
+            wrapper.className = `flex gap-4 justify-start animate-[fadeIn_0.2s_ease-out]`;
+            wrapper.innerHTML = `
+                <div class="w-8 h-8 rounded-full bg-gradient-to-br from-brand-purple to-brand-blue flex items-center justify-center shrink-0 shadow-[0_0_10px_rgba(139,92,246,0.5)]">
+                    <i class="fa-solid fa-sparkles text-white text-xs"></i>
+                </div>
+                <div class="bg-transparent text-white py-4 max-w-[85%]">
+                    <div class="typing-indicator flex items-center h-full">
+                        <span></span><span></span><span></span>
+                    </div>
+                </div>
+            `;
+            els.messagesContainer.appendChild(wrapper);
+            scrollToBottom();
+        }
+
+        function removeLoadingBubble() {
+            const loadingBubble = document.getElementById('loadingBubble');
+            if (loadingBubble) loadingBubble.remove();
+        }
+
+
+        // --- Gemini API Integrations ---
+
+        async function fetchGeminiAPI(payload, endpointType = 'text') {
+            let modelId = 'gemini-3.1-flash-preview';
+            if (endpointType === 'image-gen') modelId = 'gemini-3.1-flash-image';
+            if (endpointType === 'tts') modelId = 'gemini-2.5-flash-preview-tts';
+
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelId}:generateContent?key=${GEMINI_API_KEY}`;
+
+            // Implement basic exponential backoff
+            const maxRetries = 3;
+            let delay = 1000;
+
+            for (let i = 0; i < maxRetries; i++) {
+                try {
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) {
+                        const errText = await response.text();
+                        if (response.status === 429) {
+                            await new Promise(r => setTimeout(r, delay));
+                            delay *= 2;
+                            continue;
+                        }
+                        throw new Error(`API Error ${response.status}: ${errText}`);
+                    }
+                    return await response.json();
+                } catch (error) {
+                    if (i === maxRetries - 1) throw error;
+                }
+            }
+        }
+
+        async function processUserInput() {
+            const text = els.chatInput.value.trim();
+            if (!text && attachedFiles.length === 0) return;
+
+            els.chatInput.value = '';
+            els.chatInput.style.height = 'auto';
+            els.sendBtn.disabled = true;
+
+            // Check if it's an image generation command
+            const isImageGenCommand = text.toLowerCase().startsWith('/image ');
+            const promptText = isImageGenCommand ? text.substring(7).trim() : text;
+
+            // Construct user message object for history
+            const userParts = [];
+            if (promptText) userParts.push({ text: promptText });
+            
+            // Add attachments
+            attachedFiles.forEach(file => {
+                userParts.push({
+                    inlineData: {
+                        mimeType: file.mimeType,
+                        data: file.data
+                    }
+                });
+            });
+
+            const userMessage = { role: 'user', parts: userParts };
+            currentMessages.push(userMessage);
+            appendMessageToUI(userMessage);
+            scrollToBottom();
+
+            // Clear attachments
+            attachedFiles = [];
+            renderAttachmentPreview();
+
+            showLoadingBubble();
+
+            try {
+                if (isImageGenCommand) {
+                    // Call Image Generation Model
+                    const payload = {
+                        contents: [{ role: 'user', parts: [{ text: promptText }] }],
+                        generationConfig: {
+                            responseModalities: ['IMAGE'],
+                            imageConfig: { aspectRatio: "16:9" }
+                        }
+                    };
+                    
+                    const result = await fetchGeminiAPI(payload, 'image-gen');
+                    removeLoadingBubble();
+
+                    const imgData = result?.candidates?.[0]?.content?.parts?.find(p => p.inlineData);
+                    if (imgData) {
+                        const aiMsg = {
+                            role: 'model',
+                            parts: [
+                                { text: `Here is the image you requested for: "${promptText}"` },
+                                imgData
+                            ]
+                        };
+                        currentMessages.push(aiMsg);
+                        appendMessageToUI(aiMsg);
+                    } else {
+                        throw new Error("No image generated.");
+                    }
+
+                } else {
+                    // Call Standard Text/Vision Model
+                    const payload = {
+                        contents: currentMessages, // Send full history
+                        systemInstruction: { parts: [{ text: appSettings.systemInstruction }] },
+                        generationConfig: {
+                            temperature: parseFloat(appSettings.temperature),
+                        }
+                    };
+
+                    // Add Grounding Tool if enabled
+                    if (appSettings.webSearchEnabled) {
+                        payload.tools = [{ "google_search": {} }];
+                    }
+
+                    const result = await fetchGeminiAPI(payload, 'text');
+                    removeLoadingBubble();
+
+                    const candidate = result.candidates?.[0];
+                    if (candidate && candidate.content) {
+                        // Store the exact model response to maintain valid history schema
+                        const aiMsg = {
+                            role: 'model',
+                            parts: candidate.content.parts
+                        };
+                        
+                        // Check for grounding metadata to append sources to text display
+                        let sourceText = "";
+                        if (candidate.groundingMetadata?.groundingAttributions) {
+                            const sources = candidate.groundingMetadata.groundingAttributions
+                                .map(attr => attr.web?.title ? `[${attr.web.title}](${attr.web.uri})` : null)
+                                .filter(s => s);
+                            if (sources.length > 0) {
+                                sourceText = "\n\n---\n**Sources:**\n" + sources.map(s => `- ${s}`).join("\n");
+                            }
+                        }
+
+                        // Add sources to display text if present
+                        if(sourceText && aiMsg.parts[0].text) {
+                            aiMsg.parts[0].text += sourceText;
+                        }
+
+                        currentMessages.push(aiMsg);
+                        appendMessageToUI(aiMsg);
+                    } else {
+                        throw new Error("Empty response from AI.");
+                    }
+                }
+                
+                await saveCurrentChat();
+
+            } catch (error) {
+                console.error("Chat Error:", error);
+                removeLoadingBubble();
+                const errorMsg = { role: 'model', parts: [{ text: `⚠️ **Error:** ${error.message}. Please try again.` }] };
+                currentMessages.push(errorMsg);
+                appendMessageToUI(errorMsg);
+            } finally {
+                els.sendBtn.disabled = false;
+                els.chatInput.focus();
+            }
+        }
+
+        // --- Text To Speech (Gemini 2.5 TTS) ---
+        // Helper functions for audio buffer conversion
+        function base64ToArrayBuffer(base64) {
+            const binaryString = window.atob(base64);
+            const len = binaryString.length;
+            const bytes = new Uint8Array(len);
+            for (let i = 0; i < len; i++) bytes[i] = binaryString.charCodeAt(i);
+            return bytes.buffer;
+        }
+
+        function pcmToWav(pcmData, sampleRate = 24000) {
+            const numChannels = 1;
+            const byteRate = sampleRate * numChannels * 2;
+            const blockAlign = numChannels * 2;
+            const buffer = new ArrayBuffer(44 + pcmData.length * 2);
+            const view = new DataView(buffer);
+
+            // RIFF chunk descriptor
+            writeString(view, 0, 'RIFF');
+            view.setUint32(4, 36 + pcmData.length * 2, true);
+            writeString(view, 8, 'WAVE');
+            
+            // fmt sub-chunk
+            writeString(view, 12, 'fmt ');
+            view.setUint32(16, 16, true);
+            view.setUint16(20, 1, true); // PCM
+            view.setUint16(22, numChannels, true);
+            view.setUint32(24, sampleRate, true);
+            view.setUint32(28, byteRate, true);
+            view.setUint16(32, blockAlign, true);
+            view.setUint16(34, 16, true); // 16-bit
+
+            // data sub-chunk
+            writeString(view, 36, 'data');
+            view.setUint32(40, pcmData.length * 2, true);
+
+            // Write PCM data
+            let offset = 44;
+            for (let i = 0; i < pcmData.length; i++, offset += 2) {
+                view.setInt16(offset, pcmData[i], true);
+            }
+
+            return new Blob([view], { type: 'audio/wav' });
+        }
+        function writeString(view, offset, string) {
+            for (let i = 0; i < string.length; i++) view.setUint8(offset + i, string.charCodeAt(i));
+        }
+
+        async function generateTTS(text, btnElement) {
+            const originalHtml = btnElement.innerHTML;
+            btnElement.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin text-brand-blue"></i>`;
+            btnElement.disabled = true;
+
+            try {
+                const payload = {
+                    contents: [{ parts: [{ text: text }] }],
+                    generationConfig: {
+                        responseModalities: ["AUDIO"],
+                        speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: "Aoede" } } }
+                    },
+                };
+                
+                const result = await fetchGeminiAPI(payload, 'tts');
+                const part = result?.candidates?.[0]?.content?.parts?.[0];
+                
+                if (part?.inlineData?.data) {
+                    const sampleRateMatch = part.inlineData.mimeType.match(/rate=(\d+)/);
+                    const sampleRate = sampleRateMatch ? parseInt(sampleRateMatch[1], 10) : 24000;
+                    
+                    const pcmBuffer = base64ToArrayBuffer(part.inlineData.data);
+                    const pcm16 = new Int16Array(pcmBuffer);
+                    const wavBlob = pcmToWav(pcm16, sampleRate);
+                    const audioUrl = URL.createObjectURL(wavBlob);
+                    
+                    const audio = new Audio(audioUrl);
+                    
+                    btnElement.innerHTML = `<i class="fa-solid fa-stop text-red-500"></i>`;
+                    btnElement.disabled = false;
+                    
+                    // Allow toggling stop
+                    const stopHandler = () => { audio.pause(); cleanup(); };
+                    btnElement.addEventListener('click', stopHandler, {once: true});
+                    
+                    const cleanup = () => {
+                        btnElement.innerHTML = originalHtml;
+                        btnElement.removeEventListener('click', stopHandler);
+                    };
+                    
+                    audio.onended = cleanup;
+                    await audio.play();
+                }
+            } catch (err) {
+                console.error("TTS Error:", err);
+                btnElement.innerHTML = originalHtml;
+                btnElement.disabled = false;
+            }
+        }
+
+
+        // --- Event Listeners ---
+
+        els.sendBtn.addEventListener('click', processUserInput);
+        
+        els.chatInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                processUserInput();
+            }
+        });
+
+        // New Chat Button
+        els.newChatBtn.addEventListener('click', startNewChat);
+        
+        // Suggestion buttons
+        document.querySelectorAll('.suggestion-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const prompt = btn.querySelector('p').textContent.replace(/"/g, '');
+                els.chatInput.value = prompt;
+                processUserInput();
+            });
+        });
+
+        // File Upload Handling
+        els.imageUpload.addEventListener('change', async (e) => {
+            const files = Array.from(e.target.files);
+            if (files.length === 0) return;
+
+            for (const file of files) {
+                // Ensure size < 1MB for simplicity in this demo to avoid payload issues
+                if (file.size > 2 * 1024 * 1024) {
+                    await customAlert("File too large", `${file.name} is larger than 2MB.`);
+                    continue;
+                }
+
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        const base64Data = event.target.result.split(',')[1];
+                        attachedFiles.push({
+                            mimeType: file.type,
+                            data: base64Data,
+                            previewUrl: event.target.result
+                        });
+                        renderAttachmentPreview();
+                    };
+                    reader.readAsDataURL(file);
+                } else if (file.type === 'text/plain' || file.name.endsWith('.txt')) {
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        els.chatInput.value += `\n[Contents of ${file.name}]:\n${event.target.result}\n`;
+                    };
+                    reader.readAsText(file);
+                }
+            }
+            els.imageUpload.value = ''; // Reset input
+        });
+
+        function renderAttachmentPreview() {
+            if (attachedFiles.length === 0) {
+                els.attachmentPreview.classList.add('hidden');
+                return;
+            }
+            els.attachmentPreview.classList.remove('hidden');
+            els.attachmentPreview.innerHTML = '';
+            
+            attachedFiles.forEach((file, index) => {
+                const div = document.createElement('div');
+                div.className = 'relative w-16 h-16 rounded-md overflow-hidden shrink-0 group border border-brand-surfaceHover';
+                div.innerHTML = `
+                    <img src="${file.previewUrl}" class="w-full h-full object-cover">
+                    <button class="absolute top-1 right-1 bg-black/70 text-white rounded-full w-5 h-5 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-xs" data-index="${index}">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                `;
+                div.querySelector('button').addEventListener('click', function() {
+                    const idx = parseInt(this.getAttribute('data-index'));
+                    attachedFiles.splice(idx, 1);
+                    renderAttachmentPreview();
+                });
+                els.attachmentPreview.appendChild(div);
+            });
+        }
+
+        // Toggles
+        els.toggleSearchBtn.addEventListener('click', function() {
+            appSettings.webSearchEnabled = !appSettings.webSearchEnabled;
+            this.classList.toggle('text-brand-blue', appSettings.webSearchEnabled);
+            this.classList.toggle('text-gray-400', !appSettings.webSearchEnabled);
+            this.classList.toggle('bg-brand-surface', appSettings.webSearchEnabled);
+            const span = this.querySelector('span');
+            span.textContent = `Web Search (${appSettings.webSearchEnabled ? 'On' : 'Off'})`;
+        });
+
+        els.toggleVoiceBtn.addEventListener('click', function() {
+            appSettings.voiceOutputEnabled = !appSettings.voiceOutputEnabled;
+            this.classList.toggle('text-brand-purple', appSettings.voiceOutputEnabled);
+            this.classList.toggle('text-gray-400', !appSettings.voiceOutputEnabled);
+            this.classList.toggle('bg-brand-surface', appSettings.voiceOutputEnabled);
+            const span = this.querySelector('span');
+            span.textContent = `Voice Mode (${appSettings.voiceOutputEnabled ? 'On' : 'Off'})`;
+            // Force re-render to show/hide TTS buttons on existing messages
+            renderMessages(); 
+        });
+
+        // Speech Recognition (Web Speech API)
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (SpeechRecognition) {
+            const recognition = new SpeechRecognition();
+            recognition.continuous = false;
+            recognition.interimResults = true;
+            
+            let isRecording = false;
+
+            recognition.onstart = function() {
+                isRecording = true;
+                els.micBtn.classList.add('text-red-500', 'animate-pulse');
+                els.chatInput.placeholder = "Listening...";
+            };
+
+            recognition.onresult = function(event) {
+                let interimTranscript = '';
+                let finalTranscript = '';
+                
+                for (let i = event.resultIndex; i < event.results.length; ++i) {
+                    if (event.results[i].isFinal) {
+                        finalTranscript += event.results[i][0].transcript;
+                    } else {
+                        interimTranscript += event.results[i][0].transcript;
+                    }
+                }
+                if (finalTranscript) {
+                    els.chatInput.value += (els.chatInput.value ? ' ' : '') + finalTranscript;
+                }
+            };
+
+            recognition.onerror = function(event) {
+                console.error("Speech recognition error", event.error);
+                stopRecording();
+            };
+
+            recognition.onend = function() {
+                stopRecording();
+            };
+
+            function stopRecording() {
+                isRecording = false;
+                els.micBtn.classList.remove('text-red-500', 'animate-pulse');
+                els.chatInput.placeholder = "Message NOVA... (Type /image to generate)";
+            }
+
+            els.micBtn.addEventListener('click', () => {
+                if (isRecording) {
+                    recognition.stop();
+                } else {
+                    recognition.start();
+                }
+            });
+        } else {
+            els.micBtn.style.display = 'none'; // Hide if not supported
+        }
+
+        // Settings Modal
+        els.settingsBtn.addEventListener('click', () => {
+            els.apiKeyInput.value = localStorage.getItem('nova_gemini_key') || "";
+            els.systemPromptInput.value = appSettings.systemInstruction;
+            els.tempSlider.value = appSettings.temperature;
+            els.settingsModal.classList.remove('hidden');
+        });
+
+        els.closeSettingsBtn.addEventListener('click', () => {
+            els.settingsModal.classList.add('hidden');
+        });
+
+        els.saveSettingsBtn.addEventListener('click', () => {
+            const newKey = els.apiKeyInput.value.trim();
+            if (newKey) {
+                localStorage.setItem('nova_gemini_key', newKey);
+                GEMINI_API_KEY = newKey;
+            } else {
+                localStorage.removeItem('nova_gemini_key');
+                GEMINI_API_KEY = "";
+            }
+            
+            appSettings.systemInstruction = els.systemPromptInput.value || "You are a helpful AI.";
+            appSettings.temperature = parseFloat(els.tempSlider.value);
+            els.settingsModal.classList.add('hidden');
+        });
+
+
+        // Add Global CSS Animation for FadeIn
+        const style = document.createElement('style');
+        style.innerHTML = `
+            @keyframes fadeIn {
+                from { opacity: 0; transform: translateY(10px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // --- Start Application ---
+        document.addEventListener('DOMContentLoaded', initApp);
+
+    </script>
+</body>
+</html>
